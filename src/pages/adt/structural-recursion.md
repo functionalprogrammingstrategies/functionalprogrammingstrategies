@@ -603,7 +603,7 @@ For the `Leaf` case we want a function of type `A => B`.
 
 ```scala
 enum Tree[A] {
-  case Leaf(value: A => B)
+  case Leaf(value: A)
   case Node(left: Tree[A], right: Tree[A])
   
   def fold[B](leaf: A => B): B =
