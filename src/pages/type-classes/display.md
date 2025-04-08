@@ -164,62 +164,21 @@ by adding extension methods for its functionality:
     you created in the previous exercise.
 
 <div class="solution">
-```scala mdoc:reset:invisible
-trait Display[A] {
-  def display(value: A): String
-  def print(value: A): Unit =
-    println(display(value))
-}
-```
-
 First we define `DisplaySyntax` with the extension methods we want.
 
 ```scala mdoc:silent
 object DisplaySyntax {
   extension [A](value: A)(using p: Display[A]) {
     def display: String = p.display(value)
-    def print: Unit = p.print(value)
+    def print: Unit = Display.print(value)
   }
 }
 ```
 
 Now we can show everything working by calling `print` on a `Cat`.
 
-```scala mdoc:reset:invisible
-trait Display[A] {
-  def display(value: A): String
-  def print(value: A): Unit =
-    println(display(value))
-}
-object Display {
-  given Display[String] with {
-    def display(value: String) = value
-  }
-
-  given Display[Int] with {
-    def display(value: Int) = value.toString
-  }
-}
-
-object DisplaySyntax {
-  extension [A](value: A)(using p: Display[A]) {
-    def display: String = p.display(value)
-    def print: Unit = println(value.display)
-  }
-}
-final case class Cat(name: String, age: Int, color: String)
-```
 ```scala mdoc
 import DisplaySyntax.*
-
-given Display[Cat] with {
-  def display(cat: Cat): String = {
-    val name  = cat.name.display
-    val age   = cat.age.display
-    val color = cat.color.display
-    s"$name is a $age year-old $color cat."
-  }
-}
 
 Cat("Garfield", 41, "ginger and black").print
 ```
