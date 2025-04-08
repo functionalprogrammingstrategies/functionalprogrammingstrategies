@@ -4,7 +4,7 @@ ThisBuild / name := "scala-with-cats"
 ThisBuild / organization := "com.scalawithcats"
 ThisBuild / version := "0.0.1"
 
-ThisBuild / scalaVersion := "3.3.3"
+ThisBuild / scalaVersion := "3.3.4"
 
 ThisBuild / useSuperShell := false
 Global / onChangedBuildSource := ReloadOnSourceChanges
@@ -135,6 +135,11 @@ lazy val pages = List(
   "indexed-types/conclusions.md",
   // Tagless Final
   "tagless-final/index.md",
+  "tagless-final/codata.md",
+  "tagless-final/tagless-final.md",
+  "tagless-final/aui.md",
+  "tagless-final/tagless-final-dx.md",
+  "tagless-final/conclusions.md",
   // Interpreter optimization
   "adt-optimization/index.md",
   "adt-optimization/algebra.md",
