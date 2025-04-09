@@ -1,4 +1,4 @@
-## Three Levels for Thinking About Code
+## Three Levels for Thinking About Code {#sec:intro:three-levels}
 
 Let's start thinking about thinking about programming, with a model that describes three different levels that we can use to think about code. The levels, from highest to lowest, are paradigm, theory, and craft. Each level provides guidance for the ones below.
 

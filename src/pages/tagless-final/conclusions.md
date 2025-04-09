@@ -2,7 +2,9 @@
 
 In this chapter we looked at codata interpreters, and their extension to tagless final. Tagless final is particularly interesting because it solves the expression problem, allowing us to extend both the operations a program can perform and the interpretations of that program.
 
-Tagless final is very powerful, and we've seen an encoding of it in Scala that allows the user to write code in a very natural style. As a result it can be tempting to use it everywhere. I want to caution against this urge. Tagless final can cause problems, both for the author and the user. From the user's point of view everything works fine until they make a mistake. Then the errors can be confusing. Consider this code, where we have missed a parameter to `and`.
+Our exploration of tagless final nicely illustrates the distinction between theory and craft introduced in Section [@sec:intro:three-levels]. We saw two different encoding of tagless final in Scala (three, if we count using context bounds as a different encoding). They are both tagless final at the theory level, but are very different to implement or use as a programmer. The "standard" encoding is relatively easy to implement for the library author, but tedious and potentially confusing for the user. The improved encoding places more work on the library author, but the user writes code in a natural style.
+
+Tagless final is very powerful and it can be tempting to use it everywhere. I want to caution against this urge. Tagless final can cause problems, both for the author and the user. From the user's point of view everything works fine until they make a mistake. Then the errors can be confusing. Consider this code, where we have missed a parameter to `and`.
 
 ```scala mdoc:invisible
 type Validation[A] = A => Either[String, A]
@@ -54,10 +56,12 @@ extension [Alg <: Algebra, A](p: Program[Alg, A]) {
 Controls.textInput("Name", "John Doe").and()
 ```
 
-The error message *does* tell us the problem, but it exposes a lot of the internal machinery that the user is not normally exposed so and hence they'll probably have a hard time understanding. A straightforward data or codata interpreter does not have this problem.
+The error message *does* tell us the problem, but it exposes a lot of the internal machinery that the user is not normally exposed to, and hence they'll probably have difficult understanding. A straightforward data or codata interpreter does not have this problem.
 
 From the library author's point of view, it is a lot more work to create tagless final code. It can also be difficult to onboard new developers to this code, as the techniques are not familiar to most.
 
 As always, the applicability of tagless final comes down to the context in which it is used. In cases where the extensibility is truly justified it is a powerful tool. In other cases it just introduces unwarranted complexity.
 
-The term "expression problem" was first introduced in an email by Phil Wadler [@wadler98:ep], but there are much earlier sources that discuss the same issue. [@cook90:oo-adt] is one example. Tagless final is just one of many solutions that have been proposed to the expression problem. It was first introduced in [@jacques09:finally-tagless] and expanded on in [@kiselyov12:tagless-final]. Haskell is used as the implementation language. The common encoding in Scala is a direct translation of the Haskell implementation. The improved Scala encoding is my own creation. The use of the single abstract method shortcut was suggested by Jakub Kozłowski.
+The term "expression problem" was first introduced in an email by Phil Wadler [@wadler98:ep], but there are much earlier sources that discuss the same issue. One example is [@cook90:oo-adt]. Tagless final is just one of many solutions that have been proposed to the expression problem. It was first introduced in [@jacques09:finally-tagless] and expanded on in [@kiselyov12:tagless-final]. I'm no expert on the wider field of solutions to the expression problem, but of the ones I know about I want to highlight object algebras [@oliveira12:object-algebras]. Object algebras are, in all essentials, the same as tagless final but they arose from object-oriented languages rather than functional programming languages. It makes an interesting case of convergent evolution in two distinct, but connected, fields of research. The paper is also a good read for a more formal, if brief, discussion of the theory behind the concepts we've been dealing with.
+
+Tagless final was introduced using Haskell as the implementation language. The standard encoding in Scala is a direct translation of the Haskell implementation. The improved Scala encoding is my own creation. The use of the single abstract method shortcut was suggested by Jakub Kozłowski.
