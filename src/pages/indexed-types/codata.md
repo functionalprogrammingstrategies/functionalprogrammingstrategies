@@ -15,6 +15,7 @@ trait Switch {
 
 There are no constraints on this interface as defined; we can turn any switch on, even if it is already on, and vice versa.
 The first step to implement such a constraint is to add a type parameter, which will hold the state of the `Switch`.
+This type parameter doesn't correspond to any data we store in `Switch`, so it is a phantom type.
 
 ```scala mdoc:reset:silent
 trait Switch[A] {
@@ -23,9 +24,7 @@ trait Switch[A] {
 }
 ```
 
-This type parameter doesn't correspond to any data we store in `Switch`, so it is a phantom type.
-This is the first part of implementing indexed codata.
-We are now going to add constraints that say we can only call a certain method when this type parameter corresponds to a particular concrete type.
+We are now going to add constraints that say we can only call certain methods when this type parameter corresponds to particular concrete types.
 It is in this way that indexed codata goes beyond what phantom types alone can do: we can inspect, at compile-time, the type of a type parameter and make decisions based on this type.
 
 Implementing these constraints has two parts.
@@ -74,7 +73,7 @@ Incorrect uses fail to compile.
 SimpleSwitch.on.on
 ```
 
-The constraint is made of two parts: using clauses, which we learned about in [@sec:type-classes], and the [`A =:= B`][scala.=:=] construction, which is new. `=:=` represents a type equality. If a given instance `A =:= B` exists, then the type `A` is equal to the type `B`. (Note we can write this with the more familiar prefix notation `=:=[A, B]` if we prefer.) We never create these instances ourselves. Instead the compiler creates them for us. In the `on` method, we are asking the compiler to construct an instance `A =:= Off`, which can only be done if `A` *is* `Off`. This in turn means we can only call the method when the `Switch` is `Off`. This is the core idea of indexed codata: we reflect states as types, and restrict method calls to a subset of states.
+The constraint is made of two parts: using clauses, which we learned about in Section [@sec:type-classes], and the [`A =:= B`][scala.=:=] construction, which is new. `=:=` represents a type equality. If a given instance `A =:= B` exists, then the type `A` is equal to the type `B`. (Note we can write this with the more familiar prefix notation `=:=[A, B]` if we prefer.) We never create these instances ourselves. Instead the compiler creates them for us. In the `on` method, we are asking the compiler to construct an instance `A =:= Off`, which can only be done if `A` *is* `Off`. This in turn means we can only call the method when the `Switch` is `Off`. This is the core idea of indexed codata: we raise states into types, and restrict method calls to a subset of states.
 
 This is a different use of contextual abstraction to type classes. 
 Type classes associate operations with types.
@@ -140,6 +139,7 @@ final case class Force[Unit](value: Double) {
 ```
 </div>
 
+
 ### API Protocols
 
 An API protocol defines the order in which methods must be called. The protocol in the case of `Switch` is that we can only call `off` after calling `on` and vice versa. This protocol is a simple finite state machine, and illustrated in Figure [@fig:indexed-types:switch]. Many common types have similar protocols. For example, files can only be read once they are opened and cannot be read once they have been closed.
@@ -163,7 +163,7 @@ Let's see an example using multiple type parameters. We're going to build an API
 
 In HTML the content of the page is marked up with tags, like `<h1>`, that give it meaning. 
 For example, `<h1>` means a heading at level one, and `<p>` means a paragraph.
-An opening tag is closed by a corresponding closing tag such as `</h1>` for `<h1>` and `</p>` for `<p>`.
+An opening tag is closed by a corresponding closing tag, such as `</h1>` for `<h1>` and `</p>` for `<p>`.
 
 There are several rules for valid HTML[^valid-html]. We're going to focus on the following:
 
@@ -241,7 +241,6 @@ The key point is that we factor the state into two components.
 `StructureState` represents where in the overall structure we are (inside the `head`, inside the `body`, or inside neither).
 `TitleState` represents the state when defining the elements inside the `head`, specifically whether we have a `title` element or not.
 We could certainly represent this with one state type variable, but I find the factored representation both easier to work with and easier for other developers to understand.
-We can implement more complex protcols, such as those that can be represented by context-free or even context-sensitive grammars, using the same technique.
 
 Here's an example in use.
 
@@ -266,6 +265,8 @@ Html.empty.head
 
 These error messages are not great. We'll address this in Chapter [@sec:usability].
 
+We can implement more complex protocols, such as those that can be represented by context-free or even context-sensitive grammars, using the same technique.
+
 
 #### Exercise: HTML API Design {-}
 
@@ -280,7 +281,7 @@ Html.empty
   .toString
 ```
 
-We still require the head is specified before the body, 
+We still require the `head` is specified before the `body`, 
 but now the nesting of the method calls matches the nesting of the structure.
 Notice we're still using a Church-encoded representation.
 
@@ -384,7 +385,6 @@ Beyond that, we can view any given instance as evidence.
 Let's return to our example of length, force, and torque to see how this is useful.
 In the exercise where we defined torque as force times length, we fixed the computation to have SI units.
 The example code is below.
-This is a reasonable thing to do, as other units are insane, but there are a lot of insane people out there.
 
 ```scala
 final case class Force[Unit](value: Double) {
@@ -393,7 +393,8 @@ final case class Force[Unit](value: Double) {
 }
 ```
 
-To accomodate other unit types we can create given instances that represent the results of operations of interest.
+This is a reasonable thing to do, as other units are insane, but there are a lot of insane people out there.
+To accommodate other unit types we can create given instances that represent the results of operations of interest.
 In this case we want to represent the result of multiplying a length unit by the force unit.
 In code we can write the following.
 
