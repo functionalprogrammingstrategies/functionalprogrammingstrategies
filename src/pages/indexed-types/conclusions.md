@@ -1,4 +1,4 @@
-## Conclusions
+## Conclusions {#sec:indexed-types:conclusions}
 
 
 The earliest reference I've found to phantom types is [@10.1145/331960.331977].
