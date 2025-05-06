@@ -73,10 +73,6 @@ Let's sketch an plausible interface for our probability monad.
 ```scala
 trait Random[A] {
   def flatMap[B](f: A => Random[B]): Random[B]
-  
-  def map[B](f: A => B): Random[B]
-  
-  def product[B](that: Random[B]): Random[(A, B)]
 }
 object Random {
   def pure[A](value: A): Random[A] = ???
@@ -90,26 +86,15 @@ object Random {
 }
 ```
 
-The interface has the minimum requirements to be a monad, and a few other combinators and constructors. We can make progress on the implementation by applying the reification strategy, introduced in Section [@sec:interpreters:reification].
+The interface has the minimum requirements to be a monad, and a few other constructors. We can make progress on the implementation by applying the reification strategy, introduced in Section [@sec:interpreters:reification].
 
 ```scala
 enum Random[A] {
   def flatMap[B](f: A => Random[B]): Random[B] =
     RFlatMap(this, f)
-  
-  def map[B](f: A => B): Random[B] =
-    RMap(this, f)
-  
-  def product[B](that: Random[B]): Random[(A, B)] =
-    RProduct(this, that)
-  
-  case RFlatMap[A, B](source: Random[A], f: A => Random[B]) 
-    extends Random[B]
-  case RMap[A, B](source: Random[A], f: A => B) 
-    extends Random[B]
-  case RProduct[A, B](source: Random[A], that: Random[B])
-    extends Random[(A, B)]
-  case RPure[A](value: A)
+
+  case RFlatMap[A, B](source: Random[A], f: A => Random[B]) extends Random[B]
+  case RPure(value: A)
   case RDouble extends Random[Double]
   case RInt extends Random[Int]
 }
@@ -117,15 +102,138 @@ object Random {
   import Random.{RPure, RDouble, RInt}
 
   def pure[A](value: A): Random[A] = RPure(value)
-  
+
   // Generate a uniformly distributed random  Double greater
   // than or equal to zero and less than one.
   val double: Random[Double] = RDouble
-  
+
   // Generate a uniformly distributed random  Int
   val int: Random[Int] = RInt
 }
 ```
+
+The next step is to implement an interpreter, which is a standard structural recursion. The interpreter has a parameter that provides a source of random numbers.
+
+```scala
+def run(rng: scala.util.Random = scala.util.Random): A =
+  this match {
+    case RFlatMap(source, f) => f(source.run(rng)).run(rng)
+    case RPure(value)        => value
+    case RDouble             => rng.nextDouble()
+    case RInt                => rng.nextInt()
+  }
+```
+
+This is an example of indexed data, as the cases `RDouble` and `RInt` provide a concrete type for the type parameter `A`. This means that the cases in the interpreter can produce values of that concrete type. If we did not use indexed data we could only generate values of type `A` like we do in the `RPure` case. It's quite easy to use indexed data in Scala, and people often do so not knowing that it is anything special.
+
+To finish this implementation we should implement the `Monad` type class, which would give us `mapN` and other methods for free. However, this is outside the scope of this case study, which is focused on indexed data. I encourage you to do this yourself if you feel you need the practice.
+
+Note that indexed data can mix concrete and generic types. Let's say we add a `product` method to `Random`.
+
+```scala mdoc:silent
+enum Random[A] {
+  // ...
+
+  def product[B](that: Random[B]): Random[(A, B)] =
+    RProduct(this, that)
+
+  case RProduct[A, B](left: Random[A], right: Random[B]) extends Random[(A, B)]
+  // .. other cases here
+}
+```
+
+The right-hand side of the `RProduct` case instantiates the type parameter to `(A, B)`, which mixes the concrete tuple type with the generic types `A` and `B`
+
+There are a few tricks to using indexed data that are essential in Scala 2, and can sometimes be useful in Scala 3. Take the following Scala 2 code. (I've placed a `using` directive in this code, so if you paste it into a file and run it with the Scala CLI it will use the latest version of Scala 2.13.)
+
+```scala mdoc:reset:silent
+//> using scala 2.13
+
+sealed trait Random[A] {
+  import Random._
+
+  def flatMap[B](f: A => Random[B]): Random[B] =
+    RFlatMap(this, f)
+
+  def product[B](that: Random[B]): Random[(A, B)] =
+    RProduct(this, that)
+
+  def run(rng: scala.util.Random = scala.util.Random): A =
+    this match {
+      case RFlatMap(source, f) => f(source.run(rng)).run(rng)
+      case RProduct(l, r)      => (l.run(rng), r.run(rng))
+      case RPure(value)        => value
+      case RDouble             => rng.nextDouble()
+      case RInt                => rng.nextInt()
+    }
+
+}
+object Random {
+  final case class RFlatMap[A, B](source: Random[A], f: A => Random[B])
+      extends Random[B]
+  final case class RProduct[A, B](left: Random[A], right: Random[B])
+      extends Random[(A, B)]
+  final case class RPure[A](value: A) extends Random[A]
+  case object RDouble extends Random[Double]
+  case object RInt extends Random[Int]
+
+  def pure[A](value: A): Random[A] = RPure(value)
+
+  // Generate a uniformly distributed random  Double greater
+  // than or equal to zero and less than one.
+  val double: Random[Double] = RDouble
+
+  // Generate a uniformly distributed random  Int
+  val int: Random[Int] = RInt
+}
+```
+
+With Scala 2 there are a lot of type errors like
+
+```
+[error] constructor cannot be instantiated to expected type;
+[error]  found   : Random.RProduct[A(in class RProduct),B]
+[error]  required: Random[A(in trait Random)]
+[error]       case RProduct(l, r)      => (l.run(rng), r.run(rng))
+[error]            ^^^^^^^^
+```
+
+To solve this we need to create a nested method with a fresh type parameters. This is shown below. With this change Scala 2's type inference can successfully compiled the code.
+
+```scala
+def run(rng: scala.util.Random = scala.util.Random): A = {
+  def loop[A](random: Random[A]): A =
+    random match {
+      case RFlatMap(source, f)   => loop(f(loop(source)))
+      case RProduct(left, right) => (loop(left), loop(right))
+      case RPure(value)          => value
+      case RDouble               => rng.nextDouble()
+      case RInt                  => rng.nextInt()
+    }
+
+  loop(this)
+}
+```
+
+The other trick is for when we want to use pattern matches that match type tags. This means the form like
+
+```scala
+case r: RPure[A] => ???
+```
+
+rather than
+
+```scala
+case RPure(value) => ???
+```
+
+For cases like `RProduct` it is not clear how to write these, as the type parameters `A` and `B` for `RProduct` don't correspond to the type parameter `A` on `Random`. The solution is use lower case names from the type parameters. Concretely, this means we can write
+
+```scala
+case r: RProduct[a, b] => ???
+```
+
+The type parameters `a` and `b` are existential types; we know they exist but we don't know what concrete type they correspond to. I've found this is occasionally necessary in Scala 2, but very rare in Scala 3.
 
 [^numerics]: Due to numeric issues there may be small differences between the colors that we should ignore.
 
