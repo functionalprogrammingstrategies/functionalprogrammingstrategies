@@ -50,7 +50,7 @@ threeMetres + threeFeetAndRising
 There is one big problem with phantom types on their own: 
 there is no way to use the information stored in the phantom type
 in further processing.
-For example, force times length gives torque (with the SI unit of newton-metres).
+For example, force times length gives torque (with the SI unit of newton metres).
 However we cannot define a `*` method on `Length` that can only be called if the `Unit` is `Metre` using just the tool of phantom types.
 Similarly, we cannot define, say, a `toString` method that uses the `Unit` type to appropriately print the result.
 Solving these problems leads us to indexed codata, so let's now look at that.

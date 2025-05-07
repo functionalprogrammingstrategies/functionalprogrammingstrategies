@@ -73,7 +73,7 @@ Incorrect uses fail to compile.
 SimpleSwitch.on.on
 ```
 
-The constraint is made of two parts: using clauses, which we learned about in Section [@sec:type-classes], and the [`A =:= B`][scala.=:=] construction, which is new. `=:=` represents a type equality. If a given instance `A =:= B` exists, then the type `A` is equal to the type `B`. (Note we can write this with the more familiar prefix notation `=:=[A, B]` if we prefer.) We never create these instances ourselves. Instead the compiler creates them for us. In the `on` method, we are asking the compiler to construct an instance `A =:= Off`, which can only be done if `A` *is* `Off`. This in turn means we can only call the method when the `Switch` is `Off`. This is the core idea of indexed codata: we raise states into types, and restrict method calls to a subset of states.
+The constraint is made of two parts: using clauses, which we learned about in Section [@sec:type-classes], and the [`A =:= B`][scala.=:=] construction, which is new. `=:=` represents a type equality. If a given instance `A =:= B` exists, then the type `A` is equal to the type `B`. (Note we can write this with the more familiar prefix notation `=:=[A, B]` if we prefer.) We never create these instances ourselves; instead the compiler creates them for us. In the method `on` we are asking the compiler to construct an instance `A =:= Off`, which can only be done if `A` *is* `Off`. This in turn means we can only call the method when the `Switch` is `Off`. This is the core idea of indexed codata: we raise states into types, and restrict method calls to a subset of states.
 
 This is a different use of contextual abstraction to type classes. 
 Type classes associate operations with types.
@@ -87,9 +87,9 @@ as we can think of type classes as evidence that a type implements a certain int
 
 #### Exercise: Torque {-}
 
-In Section [@sec:indexed-types:phantom] we saw how we could use phantom types to represent units.
+In Section [@sec:indexed-types:phantom] we saw we could use phantom types to represent units.
 We also ran into a limitation: we had no way to inspect the phantom types and hence make decisions based on them.
-Now, with indexed codata, we can do that.
+Now, with indexed codata, we can do solve this problem.
 
 Below if the definition of `Length` we previously used. Your mission is to:
 
@@ -106,7 +106,7 @@ final case class Length[Unit](value: Double) {
 ```
 
 <div class="solution">
-Defining `Force`, `Torque`, and the unit types is just repeating the pattern we saw in the example code.
+Defining `Force`, `Torque`, and the unit types is a repeat of the pattern we saw in the example code.
 
 ```scala mdoc:silent
 trait Newtons
@@ -116,7 +116,7 @@ final case class Force[Unit](value: Double)
 final case class Torque[Unit](value: Double)
 ```
 
-To define the `*` method on `Force` we need constraints that `Forces` `Unit` type is `Newtons`, and `Lengths` `Unit` type is `Metres`. These are both type equalities, so we can express them with `=:=`.
+To define the `*` method on `Force` we need constraints that specify `Force's` `Unit` type is `Newtons`, and `Length's` `Unit` type is `Metres`. These are both type equalities, so we can express them with `=:=`.
 
 ```scala mdoc:reset:invisible
 trait Metres
@@ -394,7 +394,7 @@ final case class Force[Unit](value: Double) {
 ```
 
 This is a reasonable thing to do, as other units are insane, but there are a lot of insane people out there.
-To accommodate other unit types we can create given instances that represent the results of operations of interest.
+To accommodate other unit types we can create given instances that represent the result types of operations of interest.
 In this case we want to represent the result of multiplying a length unit by the force unit.
 In code we can write the following.
 
@@ -438,7 +438,6 @@ Here's an example showing it works.
 ```scala mdoc
 Length[Metres](3) * Force[Newtons](4)
 
-// What is this nonsense?
 Length[Feet](3) * Force[Pounds](4)
 ```
 
@@ -499,3 +498,5 @@ Now the example works as expected.
 Force[Newtons](3) * Length[Metres](4)
 ```
 </div>
+
+Now that we have learned about indexed codata, we'll turn to its dual, indexed data.

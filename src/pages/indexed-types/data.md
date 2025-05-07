@@ -14,11 +14,22 @@ Concretely, indexed data in Scala occurs when:
 1. we define a sum type with at least one type parameter; and
 2. cases within the sum instantiate that type parameter with a concrete type.
 
-Let's see an example. In implementing a programming language we need some representation of values within the language.
+Let's see an example. Imagine we are implementing a programming language. We need some representation of values within the language.
 Suppose our language supports strings, integers, and doubles, which we will represent with the corresponding Scala types.
-The code below shows how we can implement this.
+The code below shows how we can implement this as a standard algebraic data type.
 
 ```scala mdoc:silent
+enum Value {
+  case VString(value: String)
+  case VInt(value: Int)
+  case VDouble(value: Double)
+}
+
+```
+
+Using indexed data we can use the alternate implementation below.
+
+```scala mdoc:reset:silent
 enum Value[A] {
   case VString(value: String) extends Value[String]
   case VInt(value: Int) extends Value[Int]
@@ -27,15 +38,16 @@ enum Value[A] {
 ```
 
 This is indexed data, as it meets the criteria above: we have a type parameter `A` that is instantiated with a concrete type in the cases `VString`, `VInt`, and `VDouble`.
+It's quite easy to use indexed data in Scala, and people often do so not knowing that it is anything special.
 The natural next question is why is this useful?
 It will take a more involved example to show why, so let us now dive into one that makes good use of indexed data.
 
 
 ### The Probability Monad 
 
-Our case study will be creating a probability monad. This is a composable abstraction for defining probability distributions. The probability monad has a lot of uses. The most relevant to most developers is generating data for property-based tests, so we'll focus on this use case. However, it can also be used, for example, for statistical inference or for creating generative art. See the conclusions (Section [@sec:indexed-types:conclusions]) for some pointers to these uses.
+For our case study of indexed data we will create a probability monad. This is a composable abstraction for defining probability distributions. The probability monad has a lot of uses. The most relevant to most developers is generating data for property-based tests, so we'll focus on this use case. However, it can also be used, for example, for statistical inference or for creating generative art. See the conclusions (Section [@sec:indexed-types:conclusions]) for some pointers to these uses.
 
-Let's start with an example of generating random data. [Doodle][doodle] is a Scala library for graphics and visualization. A core part of the library is representing colors. Doodle has two different representations, RGB and OkLCH, with conversions between the two. Testing these conversions is an excellent use of property-based testing. If we can generate many, say, random RGB colors, we can test the conversion by checking the roundrip from RGB to OkLCH and back results in the original color[^numerics]. 
+Let's start with an example of generating random data. [Doodle][doodle] is a Scala library for graphics and visualization. A core part of the library is representing colors. Doodle has two different representations of colors, RGB and OkLCH, with conversions between the two. These conversions involve some somewhat tricky mathematics. Testing these conversions is an excellent use of property-based testing. If we can generate many, say, random RGB colors, we can test the conversion by checking the roundrip from RGB to OkLCH and back results in the original color[^numerics]. 
 
 To create an RGB color we need three unsigned bytes, so our first task is to define how we generate a random byte. Doodle happens to have an implementation of the probability monad that we will use. Here is how we can do it.
 
@@ -49,13 +61,14 @@ val randomByte: Random[UnsignedByte] =
   Random.int(0, 255).map(UnsignedByte.clip)
 ```
 
-Note that once again we see the interpreter strategy. A `Random[UnsignedByte]` is a value representing a program that will generate a random `UnsignedByte` when it runs.
+Note that once again we see the interpreter strategy. A `Random[A]` is a value representing a program that will generate a random value of type `A` when it runs.
 
 With three random unsigned bytes we can create a random RGB color.
 
 ```scala mdoc:silent
 val randomRGB: Random[Color] =
-  (randomByte, randomByte, randomByte).mapN((r, g, b) => Color.rgb(r, g, b))
+  (randomByte, randomByte, randomByte)
+    .mapN((r, g, b) => Color.rgb(r, g, b))
 ```
 
 We might want to check our code by generating a few random values.
@@ -66,7 +79,9 @@ randomRGB.replicateA(2).run
 
 It seems to be working.
 
-What we have seen is an illustration of using the probability monad to generate random data. The probability monad works the same way as every other algebra: we have constructors (`Random.int`), combinators (`map`, and `mapN`), and interpreters (`run`). Being a monad means the algebra has some specific structure. For example, it tells us that we have `pure` and `flatMap` available, from which we can derive `mapN`.
+Once we have a source of random data we can write tests using it. We can easily generate more data than is feasible for a programmer to write by hand, and therefore have a higher degree of certainty that our code is correct than we would get with manual testing. The details of writing the tests are not important to us here, so let's move on.
+
+We have seen is an illustration of using the probability monad to generate random data. The probability monad works the same way as every other algebra: we have constructors (`Random.int`), combinators (`map`, and `mapN`), and interpreters (`run`). Being a monad means the algebra has some specific structure. For example, it tells us that we have `pure` and `flatMap` available, from which we can derive `mapN`.
 
 Let's sketch an plausible interface for our probability monad.
 
@@ -93,7 +108,8 @@ enum Random[A] {
   def flatMap[B](f: A => Random[B]): Random[B] =
     RFlatMap(this, f)
 
-  case RFlatMap[A, B](source: Random[A], f: A => Random[B]) extends Random[B]
+  case RFlatMap[A, B](source: Random[A], f: A => Random[B])
+      extends Random[B]
   case RPure(value: A)
   case RDouble extends Random[Double]
   case RInt extends Random[Int]
@@ -124,9 +140,9 @@ def run(rng: scala.util.Random = scala.util.Random): A =
   }
 ```
 
-This is an example of indexed data, as the cases `RDouble` and `RInt` provide a concrete type for the type parameter `A`. This means that the cases in the interpreter can produce values of that concrete type. If we did not use indexed data we could only generate values of type `A` like we do in the `RPure` case. It's quite easy to use indexed data in Scala, and people often do so not knowing that it is anything special.
+This is an example of indexed data, as the cases `RDouble` and `RInt` provide a concrete type for the type parameter `A`. This means that these cases in the interpreter can produce values of that concrete type. If we did not use indexed data we could only generate values of type `A`, which the programmer would have to supply to use like in the `RPure` case.
 
-To finish this implementation we should implement the `Monad` type class, which would give us `mapN` and other methods for free. However, this is outside the scope of this case study, which is focused on indexed data. I encourage you to do this yourself if you feel you need the practice.
+To finish this implementation we should implement the `Monad` type class, which would give us `mapN` and other methods for free. However, this is outside the scope of this case study, which is focused on indexed data. I encourage you to do this yourself if you feel you would benefit from the practice.
 
 Note that indexed data can mix concrete and generic types. Let's say we add a `product` method to `Random`.
 
@@ -144,7 +160,7 @@ enum Random[A] {
 
 The right-hand side of the `RProduct` case instantiates the type parameter to `(A, B)`, which mixes the concrete tuple type with the generic types `A` and `B`
 
-There are a few tricks to using indexed data that are essential in Scala 2, and can sometimes be useful in Scala 3. Take the following Scala 2 code. (I've placed a `using` directive in this code, so if you paste it into a file and run it with the Scala CLI it will use the latest version of Scala 2.13.)
+There are a few tricks to using indexed data that are essential in Scala 2, and can sometimes be useful in Scala 3. Take the following translation of the probability monad into Scala 2. (I've placed a `using` directive in this code, so if you paste it into a file and run it with the Scala CLI it will use the latest version of Scala 2.13.)
 
 ```scala mdoc:reset:silent
 //> using scala 2.13
@@ -188,7 +204,7 @@ object Random {
 }
 ```
 
-With Scala 2 there are a lot of type errors like
+In Scala 2 this generates a lot of type errors like
 
 ```
 [error] constructor cannot be instantiated to expected type;
@@ -198,7 +214,7 @@ With Scala 2 there are a lot of type errors like
 [error]            ^^^^^^^^
 ```
 
-To solve this we need to create a nested method with a fresh type parameters. This is shown below. With this change Scala 2's type inference can successfully compiled the code.
+To solve this we need to create a nested method with a fresh type parameter in the interpreter, as shown below. With this change Scala 2's type inference works and it can successfully compile the code.
 
 ```scala
 def run(rng: scala.util.Random = scala.util.Random): A = {
