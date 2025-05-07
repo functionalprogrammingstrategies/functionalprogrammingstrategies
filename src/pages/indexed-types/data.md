@@ -61,7 +61,7 @@ val randomRGB: Random[Color] =
 We might want to check our code by generating a few random values.
 
 ```scala mdoc
-randomRGB.replicateA(3).run
+randomRGB.replicateA(2).run
 ```
 
 It seems to be working.
@@ -70,7 +70,7 @@ What we have seen is an illustration of using the probability monad to generate 
 
 Let's sketch an plausible interface for our probability monad.
 
-```scala
+```scala mdoc:reset:silent
 trait Random[A] {
   def flatMap[B](f: A => Random[B]): Random[B]
 }
@@ -88,7 +88,7 @@ object Random {
 
 The interface has the minimum requirements to be a monad, and a few other constructors. We can make progress on the implementation by applying the reification strategy, introduced in Section [@sec:interpreters:reification].
 
-```scala
+```scala mdoc:reset:silent
 enum Random[A] {
   def flatMap[B](f: A => Random[B]): Random[B] =
     RFlatMap(this, f)
@@ -130,7 +130,7 @@ To finish this implementation we should implement the `Monad` type class, which 
 
 Note that indexed data can mix concrete and generic types. Let's say we add a `product` method to `Random`.
 
-```scala mdoc:silent
+```scala mdoc:reset:silent
 enum Random[A] {
   // ...
 
@@ -227,7 +227,7 @@ rather than
 case RPure(value) => ???
 ```
 
-For cases like `RProduct` it is not clear how to write these, as the type parameters `A` and `B` for `RProduct` don't correspond to the type parameter `A` on `Random`. The solution is use lower case names from the type parameters. Concretely, this means we can write
+For cases like `RProduct` it is not clear how to write these pattern matches, as the type parameters `A` and `B` for `RProduct` don't correspond to the type parameter `A` on `Random`. The solution is use lower case names from the type parameters. Concretely, this means we can write
 
 ```scala
 case r: RProduct[a, b] => ???
