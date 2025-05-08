@@ -577,8 +577,8 @@ series = {Haskell '15}
   author          = {Kidd, Eric},
   title           = {Build your own probability monads},
   date            = 2007,
-  url          = {https://www.randomhacks.net/files/build-your-own-probability-monads.pdf}}
-
+  url          = {https://www.randomhacks.net/files/build-your-own-probability-monads.pdf}
+}
 
 @article{ERWIG_KOLLMANSBERGER_2006,
  title={FUNCTIONAL PEARLS: Probabilistic functional programming in Haskell},
@@ -606,4 +606,96 @@ journal = {Proc. ACM Program. Lang.},
 month = jul,
 articleno = {83},
 numpages = {29},
+}
+
+@inproceedings{claessen00:quickcheck,
+  author = {Claessen, Koen and Hughes, John},
+  title = {QuickCheck: a lightweight tool for random testing of Haskell programs},
+  year = {2000},
+  isbn = {1581132026},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  url = {https://doi.org/10.1145/351240.351266},
+  doi = {10.1145/351240.351266},
+  booktitle = {Proceedings of the Fifth ACM SIGPLAN International Conference on Functional Programming},
+  pages = {268–279},
+  numpages = {12},
+  series = {ICFP '00}
+}
+
+@inproceedings{runciman09:smallcheck,
+  author = {Runciman, Colin and Naylor, Matthew and Lindblad, Fredrik},
+  title = {Smallcheck and lazy smallcheck: automatic exhaustive testing for small values},
+  year = {2008},
+  isbn = {9781605580647},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  url = {https://doi.org/10.1145/1411286.1411292},
+  doi = {10.1145/1411286.1411292},
+  booktitle = {Proceedings of the First ACM SIGPLAN Symposium on Haskell},
+  pages = {37–48},
+  numpages = {12},
+  location = {Victoria, BC, Canada},
+  series = {Haskell '08}
+}
+
+@article{duregard12:feat,
+author = {Dureg\r{a}rd, Jonas and Jansson, Patrik and Wang, Meng},
+title = {Feat: functional enumeration of algebraic types},
+year = {2012},
+issue_date = {December 2012},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {47},
+number = {12},
+issn = {0362-1340},
+url = {https://doi.org/10.1145/2430532.2364515},
+doi = {10.1145/2430532.2364515},
+abstract = {In mathematics, an enumeration of a set S is a bijective function from (an initial segment of) the natural numbers to S. We define "functional enumerations" as efficiently computable such bijections. This paper describes a theory of functional enumeration and provides an algebra of enumerations closed under sums, products, guarded recursion and bijections. We partition each enumerated set into numbered, finite subsets.We provide a generic enumeration such that the number of each part corresponds to the size of its values (measured in the number of constructors). We implement our ideas in a Haskell library called testing-feat, and make the source code freely available. Feat provides efficient "random access" to enumerated values. The primary application is property-based testing, where it is used to define both random sampling (for example QuickCheck generators) and exhaustive enumeration (in the style of SmallCheck). We claim that functional enumeration is the best option for automatically generating test cases from large groups of mutually recursive syntax tree types. As a case study we use Feat to test the pretty-printer of the Template Haskell library (uncovering several bugs).},
+journal = {SIGPLAN Not.},
+month = sep,
+pages = {61–72},
+numpages = {12},
+keywords = {enumeration, memoisation, property-based testing}
+}
+
+@inproceedings{goldstein24:practice,
+  author = {Goldstein, Harrison and Cutler, Joseph W. and Dickstein, Daniel and Pierce, Benjamin C. and Head, Andrew},
+  title = {Property-Based Testing in Practice},
+  year = {2024},
+  isbn = {9798400702174},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  url = {https://doi.org/10.1145/3597503.3639581},
+  doi = {10.1145/3597503.3639581},
+  booktitle = {Proceedings of the IEEE/ACM 46th International Conference on Software Engineering},
+  articleno = {187},
+  numpages = {13},
+  location = {Lisbon, Portugal},
+  series = {ICSE '24}
+}
+
+@inproceedings{reddy20:rlcheck,
+  author={Reddy, Sameer and Lemieux, Caroline and Padhye, Rohan and Sen, Koushik},
+  booktitle={2020 IEEE/ACM 42nd International Conference on Software Engineering (ICSE)},
+  title={Quickly Generating Diverse Valid Test Inputs with Reinforcement Learning},
+  year={2020},
+  volume={},
+  number={},
+  pages={1410-1421},
+  url={https://ieeexplore.ieee.org/document/9284117}
+  doi={}
+}
+
+@inproceedings{lemieux23:codamosa,
+  author={Lemieux, Caroline and Inala, Jeevana Priya and Lahiri, Shuvendu K. and Sen, Siddhartha},
+  booktitle={2023 IEEE/ACM 45th International Conference on Software Engineering (ICSE)},
+  title={CodaMosa: Escaping Coverage Plateaus in Test Generation with Pre-trained Large Language Models},
+  year={2023},
+  volume={},
+  number={},
+  pages={919-931},
+  keywords={Software testing;Codes;Benchmark testing;Software;Space exploration;Test pattern generators;Software engineering;search based software testing;codex;test suite generation;python;large language model;automated testing},
+  doi={10.1109/ICSE48619.2023.00085}
+  url={https://www.carolemieux.com/codamosa_icse23.pdf}
 }
