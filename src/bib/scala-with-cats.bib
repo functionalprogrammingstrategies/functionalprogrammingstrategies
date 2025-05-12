@@ -337,23 +337,27 @@ series = {PPDP '01}
   doi          = {https://doi.org/10.22152/programming-journal.org/2022/6/7}}
 
 
-@article{10.1145/331963.331977,
-author = {Leijen, Daan and Meijer, Erik},
-title = {Domain specific embedded compilers},
-year = {2000},
-issue_date = {Jan. 2000},
-publisher = {Association for Computing Machinery},
-address = {New York, NY, USA},
-volume = {35},
-number = {1},
-issn = {0362-1340},
-url = {https://doi.org/10.1145/331963.331977},
-doi = {10.1145/331963.331977},
-abstract = {Domain-specific embedded languages (DSELs) expressed in higher-order, typed (HOT) languages provide a composable framework for domain-specific abstractions. Such a framework is of greater utility than a collection of stand-alone domain-specific languages. Usually, embedded domain specific languages are build on top of a set of domain specific primitive functions that are ultimately implemented using some form of foreign function call. We sketch a general design pattern/or embedding client-server style services into Haskell using a domain specific embedded compiler for the server's source language. In particular we apply this idea to implement Haskell/DB, a domain specific embdedded compiler that dynamically generates of SQL queries from monad comprehensions, which are then executed on an arbitrary ODBC database server.},
-journal = {SIGPLAN Not.},
-month = {dec},
-pages = {109–122},
-numpages = {14}
+
+@Article{boden09:generative,
+  author          = {Boden, Margaret A. and Edmonds, Ernest A.},
+  title           = {What is generative art?},
+  journaltitle    = {Digital Creativity},
+  year            = 2009,
+  series       = 20,
+  volume       = {1-2},
+  pages        = {21-46},
+  doi = {10.1080/14626260902867915}
+}
+
+@Article{dorin12:generative,
+  author          = {Alan Dorin and Jonathan McCabe and Jon McCormack and Gordon Monro and Mitchell Whitelaw},
+  title           = {A framework for understanding generative art},
+  journaltitle    = {Digital Creativity},
+  year            = 2012,
+  series       = 23,
+  volume       = {3-4},
+  pages        = {239-259},
+  doi = {10.1080/14626268.2012.709940}
 }
 
 @Comment Indexed types
@@ -375,25 +379,79 @@ location = {Austin, Texas, USA},
 series = {DSL '99}
 }
 
-@inproceedings{10.1145/1708016.1708024,
-author = {Lin, Chuan-kai and Sheard, Tim},
-title = {Pointwise generalized algebraic data types},
-year = {2010},
-isbn = {9781605588919},
+@TechReport{cheney03:first-class,
+  author          = {Cheney, James and Hinze, Ralf},
+  title           = {First-class Phantom Types},
+  institution     = {Cornell University},
+  date            = 2003,
+  url          = {https://ecommons.cornell.edu/server/api/core/bitstreams/6cf38000-1bc3-4572-b71f-9ddb06f3565c/content}}
+
+@inproceedings{hongwei03:grdc,
+author = {Xi, Hongwei and Chen, Chiyan and Chen, Gang},
+title = {Guarded recursive datatype constructors},
+year = {2003},
+isbn = {1581136285},
 publisher = {Association for Computing Machinery},
 address = {New York, NY, USA},
-url = {https://doi.org/10.1145/1708016.1708024},
-doi = {10.1145/1708016.1708024},
-abstract = {In the GADT (Generalized Algebraic Data Types) type system, a pattern-matching branch can draw type information from both the scrutinee type and the data constructor type. Even though the type system can handle complex interactions between the two types, most programs require only simple interactions in the form of parametric instantiation and type indexing.To explore the tradeoffs related to GADT patterns, we define the Pointwise GADT type system, which restricts GADTs to the common case of parametric instantiation and type indexing. The Pointwise GADT type system still accepts a wide range of GADT programs, while rejecting a pathological function whose pattern-matching branches can make arbitrarily different assumptions about the type environment. We also state and prove several properties of the type system, which we speculate might be useful in helping researchers design better type inference algorithms.},
-booktitle = {Proceedings of the 5th ACM SIGPLAN Workshop on Types in Language Design and Implementation},
-pages = {51–62},
+url = {https://doi.org/10.1145/604131.604150},
+doi = {10.1145/604131.604150},
+booktitle = {Proceedings of the 30th ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages},
+pages = {224–235},
 numpages = {12},
-keywords = {gadts, pointwise baseline, pointwise unification, pointwise unifier},
-location = {Madrid, Spain},
-series = {TLDI '10}
+keywords = {guarded recursive datatype constructors},
+location = {New Orleans, Louisiana, USA},
+series = {POPL '03}
 }
 
-@article{Roth_2023,
+@article{sheard08:type-equality,
+  title = {Meta-programming With Built-in Type Equality},
+  journal = {Electronic Notes in Theoretical Computer Science},
+  volume = {199},
+  pages = {49-65},
+  year = {2008},
+  note = {Proceedings of the Fourth International Workshop on Logical Frameworks and Meta-Languages (LFM 2004)},
+  issn = {1571-0661},
+  doi = {https://doi.org/10.1016/j.entcs.2007.11.012},
+  url = {https://www.sciencedirect.com/science/article/pii/S1571066108000789},
+  author = {Tim Sheard and Emir Pasalic},
+}
+@article{peyton-jones06:gadts,
+  author = {Peyton Jones, Simon and Vytiniotis, Dimitrios and Weirich, Stephanie and Washburn, Geoffrey},
+  title = {Simple unification-based type inference for GADTs},
+  year = 2006,
+  issue_date = {September 2006},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  volume = 41,
+  number = 9,
+  issn = {0362-1340},
+  url = {https://doi.org/10.1145/1160074.1159811},
+  doi = {10.1145/1160074.1159811},
+  journal = {SIGPLAN Not.},
+  month = sep,
+  pages = {50–61},
+  numpages = 12
+}
+
+@inproceedings{10.1145/1708016.1708024,
+  author = {Lin, Chuan-kai and Sheard, Tim},
+  title = {Pointwise generalized algebraic data types},
+  year = {2010},
+  isbn = {9781605588919},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  url = {https://doi.org/10.1145/1708016.1708024},
+  doi = {10.1145/1708016.1708024},
+  abstract = {In the GADT (Generalized Algebraic Data Types) type system, a pattern-matching branch can draw type information from both the scrutinee type and the data constructor type. Even though the type system can handle complex interactions between the two types, most programs require only simple interactions in the form of parametric instantiation and type indexing.To explore the tradeoffs related to GADT patterns, we define the Pointwise GADT type system, which restricts GADTs to the common case of parametric instantiation and type indexing. The Pointwise GADT type system still accepts a wide range of GADT programs, while rejecting a pathological function whose pattern-matching branches can make arbitrarily different assumptions about the type environment. We also state and prove several properties of the type system, which we speculate might be useful in helping researchers design better type inference algorithms.},
+  booktitle = {Proceedings of the 5th ACM SIGPLAN Workshop on Types in Language Design and Implementation},
+  pages = {51–62},
+  numpages = {12},
+  keywords = {gadts, pointwise baseline, pointwise unification, pointwise unifier},
+  location = {Madrid, Spain},
+  series = {TLDI '10}
+}
+
+@article{roth23:fluent,
    title={Fluent APIs in Functional Languages},
    volume={7},
    ISSN={2475-1421},
@@ -443,6 +501,24 @@ pages = {351–363},
 numpages = {13},
 keywords = {Logical frameworks, Functional programming, Dependent types, Coinduction}
 }
+
+@InProceedings{ostermann18:matrix,
+  author="Ostermann, Klaus and Jabs, Julian",
+  editor="Ahmed, Amal",
+  title="Dualizing Generalized Algebraic Data Types by Matrix Transposition",
+  booktitle="Programming Languages and Systems",
+  year="2018",
+  publisher="Springer International Publishing",
+  address="Cham",
+  pages="60--85",
+  isbn="978-3-319-89884-1"
+}
+
+@Unpublished{zhang22:decomposition,
+  author          = {Weixin Zhang and Cristina David and Meng Wang},
+  title           = {Decomposition without regret},
+  year            = 2022,
+  url          = {https://arxiv.org/abs/2204.10411}}
 
 @Misc{wadler98:ep,
   author       = {Phil Wadler},
@@ -697,4 +773,173 @@ keywords = {enumeration, memoisation, property-based testing}
   keywords={Software testing;Codes;Benchmark testing;Software;Space exploration;Test pattern generators;Software engineering;search based software testing;codex;test suite generation;python;large language model;automated testing},
   doi={10.1109/ICSE48619.2023.00085},
   url={https://www.carolemieux.com/codamosa_icse23.pdf}
+}
+
+@inproceedings{freeman06:jmock,
+  author = {Freeman, Steve and Pryce, Nat},
+  title = {Evolving an embedded domain-specific language in Java},
+  year = {2006},
+  isbn = {159593491X},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  url = {https://doi.org/10.1145/1176617.1176735},
+  doi = {10.1145/1176617.1176735},
+  booktitle = {Companion to the 21st ACM SIGPLAN Symposium on Object-Oriented Programming Systems, Languages, and Applications},
+  pages = {855–865},
+  numpages = {11},
+  keywords = {mock objects, embedded domain-specific language, Java},
+  location = {Portland, Oregon, USA},
+  series = {OOPSLA '06}
+}
+
+@Misc{fowler05:fluent,
+  author       = {Martin Fowler},
+  title        = {Fluent Interface},
+  date         = {2005-12-20},
+  url          = {https://www.martinfowler.com/bliki/FluentInterface.html},
+  urldate      = {2025-05-12}
+  }
+
+@inproceedings{dethlefs17:define,
+  author = {Dethlefs, Nina and Hawick, Ken},
+  title = {DEFIne: A Fluent Interface DSL for Deep Learning Applications},
+  year = {2017},
+  isbn = {9781450348454},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  url = {https://doi.org/10.1145/3039895.3039898},
+  doi = {10.1145/3039895.3039898},
+  abstract = {Recent years have seen a surge of interest in deep learning models that outperform other machine learning algorithms on benchmarks across many disciplines. Most existing deep learning libraries facilitate the development of neural nets by providing a mathematical framework that helps users implement their models more efficiently. This still represents a substantial investment of time and effort, however, when the intention is to compare a range of competing models quickly for a specific task. We present DEFIne, a fluent interface DSL for the specification, optimisation and evaluation of deep learning models. The fluent interface is implemented through method chaining. DEFIne is embedded in Python and is build on top of its most popular deep learning libraries, Keras and Theano. It extends these with common operations for data pre-processing and representation as well as visualisation of datasets and results. We test our framework on three benchmark tasks from different domains: heart disease diagnosis, hand-written digit recognition and weather forecast generation. Results in terms of accuracy, runtime and lines of code show that our DSL achieves equivalent accuracy and runtime to state-of-the-art models, while requiring only about 10 lines of code per application.},
+  booktitle = {Proceedings of the 2nd International Workshop on Real World Domain Specific Languages},
+  articleno = {3},
+  numpages = {10},
+  keywords = {deep learning, Domain-specific languages},
+  location = {Austin, TX, USA},
+  series = {RWDSL17}
+}
+
+@inproceedings{shrestha21:unravel,
+  author = {Shrestha, Nischal and Barik, Titus and Parnin, Chris},
+  title = {Unravel: A Fluent Code Explorer for Data Wrangling},
+  year = {2021},
+  isbn = {9781450386357},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  url = {https://doi.org/10.1145/3472749.3474744},
+  doi = {10.1145/3472749.3474744},
+  abstract = {Data scientists have adopted a popular design pattern in programming called the fluent interface for composing data wrangling code. The fluent interface works by combining multiple transformations on a data table—or dataframes—with a single chain of expressions, which produces an output. Although fluent code promotes legibility, the intermediate dataframes are lost, forcing data scientists to unravel the chain through tedious code edits and re-execution. Existing tools for data scientists do not allow easy exploration or support understanding of fluent code. To address this gap, we designed a tool called Unravel that enables structural edits via drag-and-drop and toggle switch interactions to help data scientists explore and understand fluent code. Data scientists can apply simple structural edits via drag-and-drop and toggle switch interactions to reorder and (un)comment lines. To help data scientists understand fluent code, Unravel provides function summaries and always-on visualizations highlighting important changes to a dataframe. We discuss the design motivations behind Unravel and how it helps understand and explore fluent code. In a first-use study with 14 data scientists, we found that Unravel facilitated diverse activities such as validating assumptions about the code or data, exploring alternatives, and revealing function behavior.},
+  booktitle = {The 34th Annual ACM Symposium on User Interface Software and Technology},
+  pages = {198–207},
+  numpages = {10},
+  keywords = {data science, data wrangling, programming},
+  location = {Virtual Event, USA},
+  series = {UIST '21}
+}
+
+@inproceedings{hawick13:fluent,
+  author = {K. A. Hawick},
+  title = {Fluent Interfaces and Domain-Specific Languages for Graph Generation
+  and Network Analysis Calculations},
+  booktitle = {Proc. Int. Conf. on Software Engineering (SE’13)},
+  year = {2013},
+  pages = {752-759},
+  address = {Innsbruck, Austria},
+  month = {11-13 February},
+  publisher = {IASTED},
+  institution = {Computer Science, Massey University},
+  timestamp = {2012.12.01}
+}
+
+@InProceedings{gil19:fling,
+  author =  {Gil, Yossi and Roth, Ori},
+  title =   {{Fling - A Fluent API Generator}},
+  booktitle =   {33rd European Conference on Object-Oriented Programming (ECOOP 2019)},
+  pages =   {13:1--13:25},
+  series =  {Leibniz International Proceedings in Informatics (LIPIcs)},
+  ISBN =  {978-3-95977-111-5},
+  ISSN =  {1868-8969},
+  year =  2019,
+  volume =  134,
+  editor =  {Donaldson, Alastair F.},
+  publisher =   {Schloss Dagstuhl -- Leibniz-Zentrum f{\"u}r Informatik},
+  address =   {Dagstuhl, Germany},
+  URL =     {https://drops.dagstuhl.de/entities/document/10.4230/LIPIcs.ECOOP.2019.13},
+  URN =     {urn:nbn:de:0030-drops-108053},
+  doi =     {10.4230/LIPIcs.ECOOP.2019.13},
+  annote =  {Keywords: fluent API, type system, compilation, code generation}
+}
+
+
+@inproceedings{10.1145/3136040.3136041,
+author = {Nakamaru, Tomoki and Ichikawa, Kazuhiro and Yamazaki, Tetsuro and Chiba, Shigeru},
+title = {Silverchain: a fluent API generator},
+year = {2017},
+isbn = {9781450355247},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3136040.3136041},
+doi = {10.1145/3136040.3136041},
+abstract = {This paper presents a tool named Silverchain, which generates class definitions for a fluent API from the grammar of the API. A fluent API is an API that is used by method chaining and its grammar is a BNF-like set of rules that defines method chains accepted in type checking. Fluent APIs generated by Silverchain provide two styles of APIs: One is for building a chain by concatenating all method calls in series. The other is for building a chain from partial chains by passing child chains to method calls in the parent chain as their arguments. To generate such a fluent API, Silverchain first translates given grammar into a set of deterministic pushdown automata without ϵ-transitions, then encodes these automata into class definitions. Each constructed automata corresponds to a nonterminal in given grammar and recognizes symbol sequences produced from its corresponding nonterminal.},
+booktitle = {Proceedings of the 16th ACM SIGPLAN International Conference on Generative Programming: Concepts and Experiences},
+pages = {199–211},
+numpages = {13},
+keywords = {Fluent API, Embedded DSL},
+location = {Vancouver, BC, Canada},
+series = {GPCE 2017}
+}
+
+@article{nakamaru17:silverchain,
+  author = {Nakamaru, Tomoki and Ichikawa, Kazuhiro and Yamazaki, Tetsuro and Chiba, Shigeru},
+  title = {Silverchain: a fluent API generator},
+  year = {2017},
+  issue_date = {December 2017},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  volume = {52},
+  number = {12},
+  issn = {0362-1340},
+  url = {https://doi.org/10.1145/3170492.3136041},
+  doi = {10.1145/3170492.3136041},
+  abstract = {This paper presents a tool named Silverchain, which generates class definitions for a fluent API from the grammar of the API. A fluent API is an API that is used by method chaining and its grammar is a BNF-like set of rules that defines method chains accepted in type checking. Fluent APIs generated by Silverchain provide two styles of APIs: One is for building a chain by concatenating all method calls in series. The other is for building a chain from partial chains by passing child chains to method calls in the parent chain as their arguments. To generate such a fluent API, Silverchain first translates given grammar into a set of deterministic pushdown automata without ϵ-transitions, then encodes these automata into class definitions. Each constructed automata corresponds to a nonterminal in given grammar and recognizes symbol sequences produced from its corresponding nonterminal.},
+  journal = {SIGPLAN Not.},
+  month = oct,
+  pages = {199–211},
+  numpages = {13},
+  keywords = {Fluent API, Embedded DSL}
+}
+
+@MastersThesis{levy16:fluent,
+  author          = {Tomer Levy},
+  title           = {A Fluent API for Automatic Generation of FLuent APIs in Java},
+  institution     = {Technion},
+  year            = 2016
+}
+
+@inproceedings{vukovic23:dsl,
+  author={Vuković, Milica and Vujović, Vladimir and Štaka, Zorana and Milinković, Snježana},
+  booktitle={2023 15th International Conference on Electronics, Computers and Artificial Intelligence (ECAI)},
+  title={Domain-Specific Language for Modeling Fluent API},
+  year={2023},
+  volume={},
+  number={},
+  pages={1-6},
+  keywords={Computers;Visualization;Codes;Computational modeling;Manuals;Skeleton;Encoding;Fluent API;Domain Specific Language;DSL Tools;Model-Driven Engineering;code generation},
+  doi={10.1109/ECAI58194.2023.10194083}}
+
+@inproceedings{nakamaru20:empirical,
+author = {Nakamaru, Tomoki and Matsunaga, Tomomasa and Yamazaki, Tetsuro and Akiyama, Soramichi and Chiba, Shigeru},
+title = {An Empirical Study of Method Chaining in Java},
+year = {2020},
+isbn = {9781450375177},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3379597.3387441},
+doi = {10.1145/3379597.3387441},
+abstract = {While some promote method chaining as a good practice for improving code readability, others refer to it as a bad practice that worsens code quality. In this paper, we first investigate whether method chaining is a programming style accepted by real-world programmers. To answer this question, we collected 2,814 Java repositories on GitHub and analyzed historical trends in the frequency of method chaining. The results of our analysis revealed the increasing use of method chaining; 23.1\% of method invocations were part of method chains in 2018, whereas only 16.0\% were such invocations in 2010. We then explore language features that are helpful to the method-chaining style but have not been supported yet in Java. For this aim, we conducted manual inspections of method chains that are randomly sampled from the collected repositories. We also estimated how effective they are to encourage the method-chaining style if they are adopted in Java.},
+booktitle = {Proceedings of the 17th International Conference on Mining Software Repositories},
+pages = {93–102},
+numpages = {10},
+keywords = {Method chaining, Quantitative analysis, Repository mining},
+location = {Seoul, Republic of Korea},
+series = {MSR '20}
 }
