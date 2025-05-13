@@ -38,6 +38,7 @@ jobs:
           sudo miktexsetup --shared=yes finish
           sudo initexmf --admin --set-config-value [MPM]AutoInstall=yes
           sudo miktex --admin packages update
+          miktex packages update
 
       - name: Setup Pandoc
 
