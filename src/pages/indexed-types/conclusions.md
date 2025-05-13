@@ -12,7 +12,7 @@ In the OOP world a combinator library is called a fluent interface. The same art
 
 The probability monad we developed, which is specialized to sampling data, is only one of many possibilities. 
 Sampling gives us an approximate representation of a distribution. Small discrete distributions can be represented exactly.
-@ERWIG_KOLLMANSBERGER_2006 show how this can be done, in addition to the sampling approach we used. @kidd07:prob shows how the exact and sampling approaches can be factored into monad transformer stacks. 
+@erwig06:pfp show how this can be done, in addition to the sampling approach we used. @kidd07:prob shows how the exact and sampling approaches can be factored into monad transformer stacks. 
 @scibior15:monads uses probability monad as the underlying abstraction on which a variety of different statistical inference algorithms are defined. This is application of the idea of multiple interpretations that we have stressed throughout this book. @scibor18:modular expands on this idea, breaking down inference algorithms into reusable components.
 
 We introduced the probability monad in the context of property based testing [@claessen00:quickcheck].
@@ -38,7 +38,7 @@ import doodle.syntax.all.*
 import doodle.java2d.*
 import doodle.interact.syntax.interpolation.*
 
-@main def cycloid(): Unit = {
+def cycloid(): Unit = {
   given Monoid[Angle => Vec] with {
     def combine(a: Angle => Vec, b: Angle => Vec): Angle => Vec =
       angle => a(angle) + b(angle)
