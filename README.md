@@ -26,10 +26,7 @@ This is always kept up to date, so refer to it for dependencies and their instal
 Once you have the dependencies installed, run `sbt` to open an SBT prompt.
 From within `sbt` you can issue the following commands:
 
-- `pdf` builds a PDF version in `dist/scala-with-cats.pdf`;
-- `html` builds an HTML version in `dist/scala-with-cats.html`;
-- `epub` builds an ePub version in `dist/scala-with-cats.epub`;
-- `all` builds all three versions.
+- `build` builds the book, with outuput in `dist/functional-programming-strategies.pdf`
 
 
 ## Contributing

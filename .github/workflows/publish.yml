@@ -50,7 +50,7 @@ jobs:
           java-version: adopt@1.11
 
       - name: Generate book
-        run: sbt all
+        run: sbt build
 
       - name: Copy book to site
         run: |
