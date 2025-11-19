@@ -23,7 +23,7 @@ jobs:
       - run: npm ci
 
       - name: Install Typst
-      - uses: typst-community/setup-typst@v4
+        uses: typst-community/setup-typst@v4
         with:
           typst-version: ^0.14.0
 
