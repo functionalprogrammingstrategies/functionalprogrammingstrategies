@@ -18,8 +18,7 @@ Portions of Functional Programming Strategies in Scala with Cats are based on Sc
 
 ## Building
 
-The build requires a lot of heavy machinery:
-texlive, node, java, scala, and pandoc and pandoc-crossref.
+The build requires Scala, Typst, and a few fonts.
 There are all installed as part of the 
 [CI job that builds the book](https://github.com/scalawithcats/scala-with-cats/blob/develop/.github/workflows/publish.yml).
 This is always kept up to date, so refer to it for dependencies and their installation.
@@ -31,17 +30,6 @@ From within `sbt` you can issue the following commands:
 - `html` builds an HTML version in `dist/scala-with-cats.html`;
 - `epub` builds an ePub version in `dist/scala-with-cats.epub`;
 - `all` builds all three versions.
-
-The `pdf`, `html`, and `epub` commands are each made of three smaller commands:
-
-- `{foo}Setup` creates temp directories and builds JS/CSS prerequisites for the HTML/ePub versions;
-- `mdoc` runs the files in `src/pages` through [mdoc](https://scalameta.org/mdoc/) to compile and run the Scala snippets;
-- `{foo}Pandoc` runs the output of `mdoc` through [pandoc](https://pandoc.org/) to produce the output.
-
-There are also `tex` and `json` commands
-(and commands like `texSetup`, `jsonPandoc`, and so on)
-that build a LaTeX version of the book and a Pandoc AST respectively.
-These are useful for debugging the build.
 
 
 ## Contributing
