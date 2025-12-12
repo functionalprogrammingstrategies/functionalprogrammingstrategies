@@ -106,10 +106,15 @@ outputDirectory := baseDirectory.value / "dist"
 val pdfFile = settingKey[File]("The PDF book file name.")
 pdfFile := outputDirectory.value / "functional-programming-strategies.pdf"
 
+val htmlFile = settingKey[File]("The HTML book file name.")
+htmlFile := outputDirectory.value / "functional-programming-strategies.html"
+
 val typst = taskKey[File]("Build the book using Typst.")
 typst := {
-  streams.value.log.info("Running typst")
-  s"typst compile ${typstDirectory.value}/fps.typ ${pdfFile.value}".!
+  streams.value.log.info("Building HTML using typst")
+  s"typst compile --features html --format html ${typstDirectory.value}/fps.typ ${htmlFile.value}".!
+  streams.value.log.info("Building PDF using typst")
+  s"typst compile --format pdf ${typstDirectory.value}/fps.typ ${pdfFile.value}".!
   pdfFile.value
 }
 
