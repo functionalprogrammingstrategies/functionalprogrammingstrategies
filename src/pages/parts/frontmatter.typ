@@ -1,4 +1,4 @@
-#import "../stdlib.typ": title-page
+#import "../stdlib.typ": title-page, target
 
 #let parts-and-headings = figure.where(kind: "part", outlined: true).or(heading.where(outlined: true))
 
@@ -97,7 +97,13 @@ This book is dedicated to those who laid the path that I have followed, to those
 
 // Preface
 #pagebreak(to: "odd")
-#set page(numbering: "i")
+#show: it => context {
+  if target() == "html" { it }
+  else {
+      set page(numbering: "i")
+      it
+  }
+}
 #set heading(numbering: none)
 #show link :set text(rgb("#996666"))
 

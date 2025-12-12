@@ -134,3 +134,8 @@
         )
     )
 }
+
+// From https://forum.typst.app/t/how-can-i-disable-page-options-when-using-html-export/6589
+//
+// Allows us to use target function outside HTML export
+#let target = dictionary(std).at("target", default: () => "paged")
