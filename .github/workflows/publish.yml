@@ -43,6 +43,7 @@ jobs:
         run: |
           sudo apt-get update -y
           sudo apt-get install -y ttf-bitstream-vera
+          sudo apt install -y fonts-ebgaramond
 
       - name: Install Scala and SBT
         uses: olafurpg/setup-scala@v11
@@ -50,7 +51,9 @@ jobs:
           java-version: adopt@1.11
 
       - name: Generate book
-        run: sbt build
+        run: |
+          mkdir -p dist
+          sbt build
 
       - name: Copy book to site
         run: |
