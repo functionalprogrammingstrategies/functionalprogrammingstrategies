@@ -9,6 +9,8 @@
 #include  "types/index.typ"
 #include  "types/views.typ"
 #include  "types/constraints.typ"
+#include  "types/opaque.typ"
+#include  "types/conclusions.typ"
 // ADTs
 #include  "adt/index.typ"
 #include  "adt/scala.typ"
