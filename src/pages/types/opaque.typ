@@ -70,3 +70,6 @@ If it's defined at the top-level, its transparent within the file.
 Otherwise it's opaque.
 
 Extension methods.
+- Defined on companion object?
+
+equals and toString
