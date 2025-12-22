@@ -1,5 +1,7 @@
-#import "../stdlib.typ": narrative-cite
+#import "../stdlib.typ": narrative-cite, href
 == Conclusions <sec:types:conclusions>
+
+The view of types as constraints is perhaps best presented in Alexis King's blog post #href("https://lexi-lambda.github.io/blog/2019/11/05/parse-don-t-validate/")[Parse, don't validate].
 
 From a programming language perspective, #narrative-cite(<pierce02:tapl>) is the standard reference on type systems.
 They define a type system as "a tractable syntactic method for proving the absence of certain program behaviors by classifying phrases by the kinds of values they compute".
