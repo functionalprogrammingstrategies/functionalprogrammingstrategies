@@ -44,10 +44,16 @@ object Opaque {
 import Opaque.*
 ```
 
-Notice that I need to define a constructor to create an `EmailAddress`,
-which is the `apply` method on the `EmailAddress` companion object,
-in addition to the `opaque type` definition of `EmailAddress` itself.
-Also notice that the constructor returns just the `address`, so long as it passes validation.
+In addition to the `opaque type` definition of `EmailAddress` itself,
+notice that I also defined a constructor to create an `EmailAddress` from a `String`.
+This is the `apply` method on the `EmailAddress` companion object.
+The constructor does a basic check on the input (ensuring it contains only one `@` character)
+and converts the input to lower case, as email addresses are case insensitive.
+I used an `assert` to do the check,
+but in a real application we'd probably want a result type that indicates something can go wrong.
+More on this below.
+Finally, notice that the constructor returns just the `address`,
+showing that the representation doesn't change.
 Here's an example, showing the result type `EmailAddress`
 
 ```scala mdoc
@@ -79,14 +85,43 @@ but it has additional properties.
 In this case we verify it contains exactly one `@` character,
 and our email addresses are case insensitive.
 
-This is good but how do we define methods?
+We've seen how to define opaque types and their constructors.
+What about other methods?
+For example, for an `EmailAddress` we might want to get the username and domain.
 
-To understand how opaque types work, we need to understand they divide our code base into two distinct parts: those where our type transparent, that is where we know the underlying representation, and the remainder where it is opaque.
-The rule is pretty simple: an opaque type is transparent within the scope in which it is defined. 
-Within an object.
+To properly understand how opaque types work, we need to understand they divide our code base into two distinct parts: those where our type is transparent, where we know the underlying representation, and the remainder where it is opaque.
+The rule is pretty simple: an opaque type is transparent within the scope in which it is defined, so within an enclosing object or class.
+If there is no enclosing scope, as in the example above,
+it is transparent only within the file in which it is defined.
+Everywhere else it is opaque.
 
-If it's defined at the top-level, its transparent within the file.
-Otherwise it's opaque.
+Where the type is transparent we can define extension methods that add whatever functionality we need. Let's see an example, adding `username` and `domain` methods to our `EmailAddress`.
+
+```scala mdoc:reset-object
+opaque type EmailAddress = String
+extension (address: EmailAddress) {
+  def username: String =
+    address.substring(0, address.indexOf('@'))
+
+  def domain: String =
+    address.substring(address.indexOf('@'), address.size)
+}
+object EmailAddress {
+  def apply(address: String): EmailAddress = {
+    assert(
+      {
+        val idx = address.indexOf('@')
+        idx != -1 && address.lastIndexOf('@') == idx
+      },
+      "Email address must contain exactly one @ symbol."
+    )
+    address.toLowerCase
+  }
+}
+```
+
+As this 
+
 
 Extension methods.
 - Defined on companion object?
