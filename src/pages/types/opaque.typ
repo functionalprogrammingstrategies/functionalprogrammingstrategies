@@ -5,9 +5,25 @@ Let's now look at opaque types.
 Opaque types are a Scala 3 feature that decouple the representation of a type from the set of allowed operations on that type.
 In simpler words, they allow us to create a type (e.g. an `EmailAddress`) that has the same runtime representation as another type (e.g. a `String`),
 but is distinct from that type in all other ways.
-For example, here's a definition of `EmailAddress` as an opaque type.
+
+Here's a definition of `EmailAddress` as an opaque type.
 
 ```scala mdoc:silent
+opaque type EmailAddress = String
+```
+
+This is enough to define the type `EmailAddress` as represented by a `String`.
+However, it's a useless definition as it lacks any way to construct an `EmailAddress`.
+To properly understand how we can define a constructor, we need to understand that opaque types divide our code base into two distinct parts: that where our type is transparent, where we know the underlying representation, and the remainder where it is opaque.
+The rule is pretty simple: an opaque type is transparent within the scope in which it is defined, so within an enclosing object or class.
+If there is no enclosing scope, as in the example above,
+it is transparent only within the file in which it is defined.
+Everywhere else it is opaque.
+
+Knowing this we can define a constructor.
+Following Scala convention we will define it as the `apply` method on the `EmailAddress` companion object.
+
+```scala mdoc:reset:silent
 opaque type EmailAddress = String
 object EmailAddress {
   def apply(address: String): EmailAddress = {
@@ -44,9 +60,6 @@ object Opaque {
 import Opaque.*
 ```
 
-In addition to the `opaque type` definition of `EmailAddress` itself,
-notice that I also defined a constructor to create an `EmailAddress` from a `String`.
-This is the `apply` method on the `EmailAddress` companion object.
 The constructor does a basic check on the input (ensuring it contains only one `@` character)
 and converts the input to lower case, as email addresses are case insensitive.
 I used an `assert` to do the check,
@@ -66,7 +79,7 @@ We cannot, for example, call methods defined on `String` on an instance of `Emai
 #footnote[
     Scala usually runs on the JVM, and the JVM was not designed to support opaque types.
     This means there are, unfortunately, a few ways to poke holes in the abstraction boundary created by an opaque type.
-    If we use `isInstanceOf`, we can test for the underlying representation.
+    If we use `isInstanceOf` we can test for the underlying representation.
     Using the methods defined on `Object` (`Any` in Scala), namely `equals`, `hashCode`, and `toString`, also allow us to peek inside.
 ]
 
@@ -88,16 +101,10 @@ and our email addresses are case insensitive.
 We've seen how to define opaque types and their constructors.
 What about other methods?
 For example, for an `EmailAddress` we might want to get the username and domain.
+We can use extension methods to do this.
+As with the constructor, we just need to define these extension methods in a place where the type is transparent.
 
-To properly understand how opaque types work, we need to understand they divide our code base into two distinct parts: those where our type is transparent, where we know the underlying representation, and the remainder where it is opaque.
-The rule is pretty simple: an opaque type is transparent within the scope in which it is defined, so within an enclosing object or class.
-If there is no enclosing scope, as in the example above,
-it is transparent only within the file in which it is defined.
-Everywhere else it is opaque.
-
-Where the type is transparent we can define extension methods that add whatever functionality we need. Let's see an example, adding `username` and `domain` methods to our `EmailAddress`.
-
-```scala mdoc:reset-object
+```scala mdoc:reset:silent
 opaque type EmailAddress = String
 extension (address: EmailAddress) {
   def username: String =
@@ -120,10 +127,79 @@ object EmailAddress {
 }
 ```
 
-As this 
+```scala mdoc:invisible
+val email = EmailAddress("someone@example.com")
+```
+
+With this definition we can use the extension methods as we'd expect.
+
+```scala mdoc
+email.username
+email.domain
+```
+
+=== Best Practices
+
+We've seen all the important technical details for opaque types,
+so let's now discuss some of the best practices---the craft---of using them.
+
+The first point I want to address is the constructor. "Types as constraints" is the strategy we're covering in this chapter.
+There is a constraint on the `String` input to the constructor: it must contain an `@` character.
+We should represent this as a type!
+We could create another opaque type, called something like `StringWithAnAtCharacter`, but this approaches leads to infinite regress.
+We cannot push constraints forward indefinitely.
+At some point we have to work with primitive types and return a result that indicates the possibility of error.
+So our constructor would be better if it returned, say, an `Option` or `Either` to indicate that construction can fail.
+
+There are cases where we know the constructor cannot fail,
+but we don't have a convenient way of proving this to the compiler.
+For example, if we're loading email addresses from a list that is known to be good, it would be nice to avoid having to writing useless error handling code.
+For this reason I recommend including a constructor that doesn't do any validation.
+I usually call this method `unsafeApply`, to indicate to the reader that certain checks are not being done.
+These changes are shown below.
+For simplicity I've used `Option` as the result type.
+
+```scala mdoc:reset:silent
+type EmailAddress = String
+object EmailAddress {
+  def apply(address: String): Option[EmailAddress] = {
+    val idx = address.indexOf('@')
+    if idx != -1 && address.lastIndexOf('@') == idx then Some(address.toLowerCase)
+    else None
+  }
+
+  def unsafeApply(address: String): EmailAddress = address
+}
+```
+
+At some point we'll almost certainly need to convert from our opaque type back to its underlying type.
+I've seen a few conventions for naming such a method; `value` and `get` are popular.
+However, I prefer a more descriptive `toType`, replacing `Type` with the concreate type name,
+as this extends to conversions to other types.
+For `EmailAddress` this means an extension method `toString`, as shown below.
+Notice that the method simply returns the `address` value,
+once showing the distinction between the type and it's representation as a value.
+
+```scala mdoc:silent
+extension (address: EmailAddress) {
+  def toString: String = address
+}
+```
 
 
-Extension methods.
-- Defined on companion object?
+=== Beyond Opaque Types
 
-equals and toString
+Opaque types are a lightweight way to add structure---to use types to represent constraints---to our code. However there are two cases where they aren't appropriate.
+
+The first case is when the data requires more structure that we can represent with an opaque type.
+For example, a (two-dimensional) point requires two coordinates, so there is no single type that we can use#footnote[
+    We could use an `Array[Double]` or `Tuple2[Double, Double]`,
+    but at this point it's simpler to just define a class in the usual way.
+].
+In these cases, we're probably looking for an algebraic data type. They are discussed in @sec:adt.
+
+
+The second case is when you need to reimplement one of the methods, most commonly `toString`, that opaque types cannot override.
+If we're creating types that represent personal information such as addresses and passwords, we might want to ensure they cannot be accidentally exposed in logs.
+Overriding `toString` helps ensure this, but we cannot do this for opaque types.
+

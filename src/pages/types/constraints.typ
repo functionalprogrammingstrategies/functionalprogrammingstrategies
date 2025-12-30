@@ -32,6 +32,9 @@ For example, if we have `EmailAddress` and `VerifiedEmailAddress` types,
 the compiler will tell us if we try to use an `EmailAddress` where a `VerifiedEmailAddress` is required.
 This brings us to two principles:
 
-1. Types should represent what we know about values, or in other words the invariants or constraints on values. A `String` could be any sequence of characters. `VerifiedEmailAddress` is also a sequence of characters, but it's one that represents an email address that we have verified is active.
+1. Types should represent what we know about values, or in other words the invariants or constraints on values. A `String` could be any sequence of characters. A `VerifiedEmailAddress` is also a sequence of characters, but it's one that represents an email address that we have verified is active.
 
 2. Whenever we establish an additional invariant or constraint we should change the type to reflect this additional information. So for example, an email address might start out as a `String`, become an `EmailAddress` if we have verified it looks like an email, and then become a `VerifiedEmailAddress` when we've successfully sent it a verification email and received a response.
+
+
+=== Constraints Backwards and Forwards
