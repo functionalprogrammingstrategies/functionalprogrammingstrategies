@@ -4,7 +4,7 @@
 The view of types as constraints is perhaps best presented in Alexis King's blog post #href("https://lexi-lambda.github.io/blog/2019/11/05/parse-don-t-validate/")[Parse, don't validate].
 
 From a programming language perspective, #narrative-cite(<pierce02:tapl>) is the standard reference on type systems.
-They define a type system as "a tractable syntactic method for proving the absence of certain program behaviors by classifying phrases by the kinds of values they compute".
+They define a type system as "a tractable syntactic method for proving the absence of certain program behaviours by classifying phrases by the kinds of values they compute".
 The introduction provides a very nice overview of the role of type systems in programming languages, as well as pointers to the broader study of type systems in mathematics and philosophy. 
 
 #narrative-cite(<morris73:types>) is a very early paper (typewritten in two column justified text, a truly virtuoso performance on the type writer!) that presents the intensional view of types. I feel it ends a bit abruptly, but has the seed of many ideas that will only be fully developed much later. You can see the suggestion of opaque types as discussed in this chapter, and also module systems and existential types.

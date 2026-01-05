@@ -3,8 +3,8 @@
 
 What is a type?
 One way of answering this question quickly veers into mathematics and philosophy.
-There are some references in the conclusions if you want to follow this direction.
-However, here we'll answer this question from the programmer's perspective.
+There are some references in the conclusions if you want to follow that direction.
+Here we'll answer this question from the programmer's perspective.
 
 The most common perspective is that types are sets of values.
 This is the extensional view,
@@ -19,7 +19,7 @@ we are working with the information the compiler needs to allocate memory for va
 and to generate instructions that operate on those values.
 If we are working with a relatively inexpressive type system,
 such as the C type system,
-it's easy to see type as just busy work done to make the compiler happy.
+it's easy to see types as nothing more than busy work to make the compiler happy.
 
 The extensional view doesn't provide any *encapsulation* or *information hiding*.
 Knowing the representation can be a problem when that integer represents, say,

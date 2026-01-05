@@ -111,7 +111,7 @@ extension (address: EmailAddress) {
     address.substring(0, address.indexOf('@'))
 
   def domain: String =
-    address.substring(address.indexOf('@'), address.size)
+    address.substring(address.indexOf('@') + 1, address.size)
 }
 object EmailAddress {
   def apply(address: String): EmailAddress = {
@@ -164,7 +164,8 @@ type EmailAddress = String
 object EmailAddress {
   def apply(address: String): Option[EmailAddress] = {
     val idx = address.indexOf('@')
-    if idx != -1 && address.lastIndexOf('@') == idx then Some(address.toLowerCase)
+    if idx != -1 && address.lastIndexOf('@') == idx
+    then Some(address.toLowerCase)
     else None
   }
 
@@ -194,12 +195,14 @@ Opaque types are a lightweight way to add structure---to use types to represent 
 The first case is when the data requires more structure that we can represent with an opaque type.
 For example, a (two-dimensional) point requires two coordinates, so there is no single type that we can use#footnote[
     We could use an `Array[Double]` or `Tuple2[Double, Double]`,
-    but at this point it's simpler to just define a class in the usual way.
+    but it's simpler to just define a class in the usual way.
 ].
-In these cases, we're probably looking for an algebraic data type. They are discussed in @sec:adt.
+We also cannot define opaque types with type parameters.
+In these cases we're probably looking for an algebraic data type,
+which is discussed in @sec:adt.
 
-
-The second case is when you need to reimplement one of the methods, most commonly `toString`, that opaque types cannot override.
-If we're creating types that represent personal information such as addresses and passwords, we might want to ensure they cannot be accidentally exposed in logs.
+The second case is when we need to reimplement one of the methods, most commonly `toString`, that opaque types cannot override.
+For example,
+if we're creating types that represent personal information such as addresses and passwords, we might want to ensure they cannot be accidentally exposed in logs.
 Overriding `toString` helps ensure this, but we cannot do this for opaque types.
 

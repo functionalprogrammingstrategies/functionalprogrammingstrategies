@@ -10,7 +10,8 @@ but is necessary to get the most from an expressive type system
 and is the core of the strategy.
 Hence we'll spend some time elaborating on this idea, and discussing examples.
 
-We'll conclude by looking at a Scala 3 feature, known as *opaque types*.
+Once we understand the concept of types as constraints,
+we'll look at a Scala 3 feature, known as *opaque types*.
 Opaque types allow us to create distinct types that have the same runtime representation as another type.
 As such, they provide a way to decouple representation from operations,
 and allow us to work with a purely intensional view.
