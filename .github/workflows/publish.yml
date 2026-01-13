@@ -6,7 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout current branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Download Java
         uses: actions/setup-java@v4
@@ -48,21 +48,17 @@ jobs:
       - name: Install Scala and SBT
         uses: olafurpg/setup-scala@v11
         with:
-          java-version: adopt@1.11
+          java-version: adopt@1.17
 
       - name: Generate book
         run: |
           mkdir -p dist
           sbt build
 
-      - name: Copy book to site
-        run: |
-          mv dist/* site/dist
-
       - name: Publish site
-        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/develop'
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
         uses: peaceiris/actions-gh-pages@v3.8.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: site
+          publish_dir: dist
           keep_files: true
