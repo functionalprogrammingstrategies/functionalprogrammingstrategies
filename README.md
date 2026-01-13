@@ -1,6 +1,8 @@
 # Functional Programming Strategies in Scala with Cats
 
-Copyright [Noel Welsh](http://twitter.com/noelwelsh) 2012-2024.
+The main repository has moved to the [Functional Programming Strategies organization](https://github.com/functionalprogrammingstrategies/functionalprogrammingstrategies) to reflect the change in name. This repository is kept around as an archive of the original Scala with Cats book that gave birth to Functional Programming Strategies.
+
+Copyright [Noel Welsh](http://twitter.com/noelwelsh) 2012-2026.
 
 Artwork by [Jenny Clements](http://patreon.com/miasandelle).
 
@@ -41,4 +43,4 @@ or you'd like to suggest a larger change
 to the content or structure of the book,
 please raise an issue instead.
 
-[website]: https://scalawithcats.com/
+[website]: https://functionalprogrammingstrategies.com/
