@@ -2,7 +2,9 @@
 
 Master functional programming. [Read it online.][website]
 
-Copyright [Noel Welsh](http://twitter.com/noelwelsh) 2012-2024.
+The main repository has moved to the [Functional Programming Strategies organization](https://github.com/functionalprogrammingstrategies/functionalprogrammingstrategies) to reflect the change in name. This repository is kept around as an archive of the original Scala with Cats book that gave birth to Functional Programming Strategies.
+
+Copyright [Noel Welsh](http://twitter.com/noelwelsh) 2012-2026.
 
 Artwork by [Jenny Clements](http://patreon.com/miasandelle).
 
