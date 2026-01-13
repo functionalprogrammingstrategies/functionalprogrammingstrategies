@@ -1,6 +1,6 @@
 # Functional Programming Strategies
 
-A book for mastering functional programming. [Read it online][website].
+Master functional programming. [Read it online.][website]
 
 Copyright [Noel Welsh](http://twitter.com/noelwelsh) 2012-2024.
 
