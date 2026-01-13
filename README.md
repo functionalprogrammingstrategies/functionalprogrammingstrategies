@@ -1,10 +1,11 @@
-# Functional Programming Strategies in Scala with Cats
+# Functional Programming Strategies
+
+A book for mastering functional programming. [Read it online][website].
 
 Copyright [Noel Welsh](http://twitter.com/noelwelsh) 2012-2024.
 
 Artwork by [Jenny Clements](http://patreon.com/miasandelle).
 
-Published by [Inner Product](https://inner-product.com/).
 
 <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons Licence" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
 
@@ -41,4 +42,4 @@ or you'd like to suggest a larger change
 to the content or structure of the book,
 please raise an issue instead.
 
-[website]: https://scalawithcats.com/
+[website]: https://functionalprogrammingstrategies.com/
