@@ -103,6 +103,12 @@ copyNonTypstFiles := {
 val outputDirectory = settingKey[File]("Path where the built book goes.")
 outputDirectory := baseDirectory.value / "dist"
 
+val makeOutputDirectory = taskKey[Unit]("Make the output directory")
+makeOutputDirectory := {
+  val dir = outputDirectory.value
+  s"mkdir -p $dir".!
+}
+
 val pdfFile = settingKey[File]("The PDF book file name.")
 pdfFile := outputDirectory.value / "functional-programming-strategies.pdf"
 
@@ -127,6 +133,7 @@ build := Def
     mdoc.toTask(""),
     mdToTypst,
     copyNonTypstFiles,
+    makeOutputDirectory,
     typst
   )
   .value

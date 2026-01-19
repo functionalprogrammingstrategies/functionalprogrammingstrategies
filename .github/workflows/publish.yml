@@ -59,6 +59,14 @@ jobs:
           mkdir -p dist
           sbt build
 
+      - name: Install pdftk
+        run: |
+          sudo apt-get install -y pdftk-java
+
+      - name: Generate preview
+        run: |
+          pdftk dist/functional-programming-strategies.pdf cat 1-150 output dist/functional-programming-strategies-preview.pdf
+
       - name: Publish site
         if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
         uses: peaceiris/actions-gh-pages@v3.8.0
