@@ -36,9 +36,28 @@
     title-color: rgb(233, 151, 63),
     body-color: black)
 
-#let solutions = state("solutions", ())
-#let solution(body) = {
-    solutions.update(s => s.push(body))
+#let solutions-counter = counter("solutions")
+#let solutions-state = state("solutions", ())
+#let solution-heading(title) = {
+    heading(depth: 4, numbering: none, outlined: false, "Solution " + title)
+}
+#let solution(body) = block[
+    #context {
+        solutions-counter.step()
+        let solutionLabel = label("solution:" + solutions-counter.display())
+        let exerciseLabel = label("exercise:" + solutions-counter.display())
+        let heading = solution-heading(solutions-counter.display())
+        link(solutionLabel)[Go to the solution. #exerciseLabel]
+        solutions-state.update(s => {
+            s.push([#heading #solutionLabel])
+            s.push(body)
+            s.push(link(exerciseLabel)[Return to the exercise.])
+            s
+        })
+    }
+]
+#let solutions = context {
+    solutions-state.final().sum()
 }
 
 

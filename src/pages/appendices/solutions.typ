@@ -1,1 +1,4 @@
-#import "../stdlib.typ": info, warning, solution
+#import "../stdlib.typ": chapter, solutions
+#chapter[Solutions] <sec:solutions>
+
+#solutions
