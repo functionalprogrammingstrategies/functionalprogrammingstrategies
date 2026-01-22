@@ -2,7 +2,7 @@
 #chapter[Algebraic Data Types] <sec:adt>
 
 
-This chapter has our first example of a programming strategy: *algebraic data types*. Any data we can describe using logical ands and logical ors is an algebraic data type. Once we recognize an algebraic data type we get three things for free:
+This chapter's strategy is *algebraic data types*. Any data we can describe using logical ands and logical ors is an algebraic data type. Once we recognize an algebraic data type we get three things for free:
 
 - the Scala representation of the data;
 - a *structural recursion* skeleton to transform the algebraic data type into any other type; and
