@@ -1,5 +1,6 @@
 #import "../stdlib.typ": info, warning, solution
-= Acknowledgements
+#heading(level: 1, "Acknowledgements")
+<sec:solutions>
 
 
 No book is an island.

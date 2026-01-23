@@ -134,9 +134,11 @@
 #include  "case-studies/crdt/abstraction.typ"
 #include  "case-studies/crdt/summary.typ"
 
+// Set styles apply only to the file in which they are defined,
+// so we have to define it here rather than in backmatter.typ
+#set heading(numbering: none)
+#include  "parts/backmatter.typ"
 #include  "parts/appendices.typ"
 #include  "appendices/solutions.typ"
 #include  "appendices/acknowledgements.typ"
-
-#include  "parts/backmatter.typ"
 #include  "bibliography.typ"

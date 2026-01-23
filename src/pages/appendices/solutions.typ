@@ -1,4 +1,5 @@
 #import "../stdlib.typ": chapter, solutions
-#chapter[Solutions] <sec:solutions>
+#heading(level: 1, "Solutions")
+<sec:solutions>
 
 #solutions
