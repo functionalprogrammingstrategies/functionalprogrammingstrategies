@@ -60,7 +60,7 @@
 #let solutions-state = state("solutions", ())
 #let solution-heading(title, label) = {
     [
-        #heading(depth: 4, numbering: none, outlined: false, "Solution: " + title)
+        #heading(depth: 4, numbering: none, outlined: false, "Solution " + solution-counter.display() + ": " + title)
         #label
     ]
 }
@@ -71,7 +71,7 @@
         let exerciseTitle = exercise-title.get()
         let exerciseLabel = exercise-label.get()
         let heading = solution-heading(exerciseTitle, solutionLabel)
-        link(solutionLabel)[Go to the solution.]
+        link(solutionLabel)[See the solution (Solution #solution-counter.display()).]
         solutions-state.update(s => {
             s.push(heading)
             s.push(body)
