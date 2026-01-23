@@ -36,22 +36,46 @@
     title-color: rgb(233, 151, 63),
     body-color: black)
 
-#let solutions-counter = counter("solutions")
+
+
+// Exercises and solutions
+    
+#let exercise-counter = counter("exercise")
+// Stores the title of the current exercise
+#let exercise-title = state("exercise-title", "")
+// Stores the label of the current exercise
+#let exercise-label = state("exercise-label", none)
+#let exercise(title) = context {
+    exercise-counter.step()
+    exercise-title.update(title)
+    let exerciseLabel = label("exercise:" + exercise-counter.display())
+    exercise-label.update(exerciseLabel)
+    [
+        #heading(depth: 4, numbering: none, outlined: false, "Exercise: " + title)
+        #exerciseLabel
+    ]
+}
+
+#let solution-counter = counter("solution")
 #let solutions-state = state("solutions", ())
-#let solution-heading(title) = {
-    heading(depth: 4, numbering: none, outlined: false, "Solution " + title)
+#let solution-heading(title, label) = {
+    [
+        #heading(depth: 4, numbering: none, outlined: false, "Solution: " + title)
+        #label
+    ]
 }
 #let solution(body) = block[
     #context {
-        solutions-counter.step()
-        let solutionLabel = label("solution:" + solutions-counter.display())
-        let exerciseLabel = label("exercise:" + solutions-counter.display())
-        let heading = solution-heading(solutions-counter.display())
-        link(solutionLabel)[Go to the solution. #exerciseLabel]
+        solution-counter.step()
+        let solutionLabel = label("solution:" + solution-counter.display())
+        let exerciseTitle = exercise-title.get()
+        let exerciseLabel = exercise-label.get()
+        let heading = solution-heading(exerciseTitle, solutionLabel)
+        link(solutionLabel)[Go to the solution.]
         solutions-state.update(s => {
-            s.push([#heading #solutionLabel])
+            s.push(heading)
             s.push(body)
-            s.push(link(exerciseLabel)[Return to the exercise.])
+            s.push(par(link(exerciseLabel)[Return to the exercise.]))
             s
         })
     }
@@ -109,10 +133,6 @@
     caption: []
 )
 
-
-#let exercise(title) = {
-    heading(depth: 4, numbering: none, outlined: false, "Exercise: " + title)
-}
 
 #let narrative-cite(label) = {
     show cite.where(form: "prose"): it => {

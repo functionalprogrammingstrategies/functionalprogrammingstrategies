@@ -115,14 +115,39 @@ pdfFile := outputDirectory.value / "functional-programming-strategies.pdf"
 val htmlFile = settingKey[File]("The HTML book file name.")
 htmlFile := outputDirectory.value / "functional-programming-strategies.html"
 
-val typst = taskKey[File]("Build the book using Typst.")
-typst := {
-  streams.value.log.info("Building HTML using typst")
-  s"typst compile --features html --format html ${typstDirectory.value}/fps.typ ${htmlFile.value}".!
+val typstPdf = taskKey[File]("Build the PDF using Typst")
+typstPdf := {
   streams.value.log.info("Building PDF using typst")
   s"typst compile --format pdf ${typstDirectory.value}/fps.typ ${pdfFile.value}".!
   pdfFile.value
 }
+
+val typstHtml = taskKey[File]("Build the HTML using Typst")
+typstHtml := {
+  streams.value.log.info("Building HTML using typst")
+  s"typst compile --features html --format html ${typstDirectory.value}/fps.typ ${htmlFile.value}".!
+  htmlFile.value
+}
+
+val typst = taskKey[File]("Build the book using Typst.")
+typst := {
+  typstHtml.value
+  typstPdf.value
+}
+
+val buildPdf =
+  taskKey[File]("Build the PDF, returning the path to the output.")
+buildPdf / fileInputs += pages.value
+buildPdf := Def
+  .sequential(
+    typstToMd,
+    mdoc.toTask(""),
+    mdToTypst,
+    copyNonTypstFiles,
+    makeOutputDirectory,
+    typstPdf
+  )
+  .value
 
 val build =
   taskKey[File]("Build the book, returning the path to the output.")
