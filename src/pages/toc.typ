@@ -119,6 +119,8 @@
 #include  "parts/part4.typ"
 #include  "usability/index.typ"
 #include  "case-studies/testing/index.typ"
+#include  "case-studies/di/index.typ"
+#include  "case-studies/di/constructors.typ"
 #include  "case-studies/error-handling/index.typ"
 #include  "case-studies/map-reduce/index.typ"
 #include  "case-studies/validation/index.typ"
