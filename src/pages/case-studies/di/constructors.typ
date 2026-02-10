@@ -98,9 +98,42 @@ val saveUser: (User, DatabaseConnection) => Unit =
   (id, database) => ???
 ```
 
-Now we have two options for dealing with the dependency: we can move it before the functions or we move it after the function.
-Showing this in code will make it clearer.
-First, we move the dependnecy before the functions.
+Now we have two options for dealing with the dependency: we can move it before or after the functions.
+We'll first look at moving the dependencies after the functions.
+
+```scala mdoc:silent:nest
+val getUser: UserId => DatabaseConnection => User =
+  id => database => ???
+
+val saveUser: User => DatabaseConnection => Unit =
+  user => database => ???
+```
+
+Now `getUser` and `saveUser` are functions as before, but we only pass the parameters that are not a dependency.
+We get back a function that requires the dependency, so we supply the dependencies after calling the functions.
+As you may recall, this is the core of the reader monad.
+
+In the reader monad world we end up with lots of little functions that require dependencies.
+The way the reader monad handles this is by giving us combinators---`flatMap`, `map`, and friends---that allow us to compose these little functions into a single big function that takes all the needed dependencies.
+
+Let's now look at moving the dependencies before the functions.
+
+```scala mdoc:silent:nest
+val getUser: DatabaseConnection => UserId => User =
+  database => id => ???
+
+val saveUser: DatabaseConnection => User => Unit =
+  database => user => ???
+```
+
+In this version we must supply the `DatabaseConnection` dependency before we create the `getUser` and `saveUser` functions.
+We could work with this code in the reader monad, but it is substantially more annoying to do so.
+In the usual reader monad we only have to combine the results of calling the functions we want.
+In this encoding we have to reach inside the monads to actually call the functions we are after.
+
+Let's see if we can simply this code, and make it easier to work with.
+The first thing we might notice is that both functions have the same first parameter.
+We can define a single function of the dependency, which in turn returns two functions.
 
 ```scala mdoc:silent:nest
 val userDb = (database: DatabaseConnection) =>
@@ -114,20 +147,39 @@ val userDb = (database: DatabaseConnection) =>
   (getUser, saveUser)
 ```
 
-In this version we must supply the `DatabaseConnection` dependency before we create `getUser` and `saveUser`.
-We return a tuple of the functions, which is a bit awkward to work with. We'll return to this in a moment.
-
-First we'll look at the alternative, moving the dependencies after the functions.
-Now `getUser` and `saveUser` are functions as before, but we only pass the parameters that are not a dependency.
-We get back a function that requires a dependency.
-As you may recall, this is exactly the reader monad.
+It's a bit awkward to work with a tuple of functions.
+Better if we can name this tuple, so that where we require one or both of these functions we can just refer to the name.
 
 ```scala mdoc:silent:nest
-val getUser: UserId => DatabaseConnection => User =
-  id => database => ???
+abstract class UserDb {
+  def getUser(id: UserId): User
 
-val saveUser: User => DatabaseConnection => Unit =
-  user => database => ???
+  def saveUser(user: User): Unit
+}
+
+val userDb: DatabaseConnection => UserDb = database =>
+  new UserDb {
+    def getUser(id: UserId): User = ???
+  
+    def saveUser(user: User): Unit = ???
+  }
 ```
 
+At this point we should go ahead and define a normal class with a constructor parameter.
 
+```scala mdoc:nest
+class UserDb(database: DatabaseConnection) {
+  def getUser(id: UserId): User = ???
+
+  def saveUser(user: User): Unit = ???
+}
+```
+
+What should we make of this duality?
+It illustrates the effect that the language features have on our code.
+Both approaches are equivalent, as we have shown, but each is more idiomatic in any given languages.
+In a language with good support for object-oriented programming, or codata as we might prefer to call it,
+constructor injection works very well.
+The core is that we can name the result type, the `UserDb`, so other functions can just require a value of that type.
+In languages without such good support, we could use a tuple or a record type, which works but is less idiomatic.
+There is no correct solution absent the context in which the solution is used.
