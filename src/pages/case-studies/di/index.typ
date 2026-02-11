@@ -35,7 +35,7 @@ We only care about this if dependencies can change. This is often the case, at l
 
 Now that we agree on what we mean by dependencies, let's talk about the approaches we'll look at:
 
-- constructor parameters
+- constructor injection
 - the reader monad
 - interpreters
 - what's variously known as the Cake pattern, ML modules

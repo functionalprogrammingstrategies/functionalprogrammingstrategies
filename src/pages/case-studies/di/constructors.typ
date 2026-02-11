@@ -149,6 +149,7 @@ val userDb = (database: DatabaseConnection) =>
 
 It's a bit awkward to work with a tuple of functions.
 Better if we can name this tuple, so that where we require one or both of these functions we can just refer to the name.
+We can create a name by defining a class.
 
 ```scala mdoc:silent:nest
 abstract class UserDb {
@@ -175,11 +176,18 @@ class UserDb(database: DatabaseConnection) {
 }
 ```
 
+We've reached our goal, showing how we can transform the reader monad into constructor injection.
 What should we make of this duality?
 It illustrates the effect that the language features have on our code.
-Both approaches are equivalent, as we have shown, but each is more idiomatic in any given languages.
+Both approaches are equivalent, as we have shown, but they are not equally idiomatic in any given language.
 In a language with good support for object-oriented programming, or codata as we might prefer to call it,
 constructor injection works very well.
 The core is that we can name the result type, the `UserDb`, so other functions can just require a value of that type.
 In languages without such good support, we could use a tuple or a record type, which works but is less idiomatic.
 There is no correct solution absent the context in which the solution is used.
+
+There is one important difference between the reader monad and constructor injection.
+The reader monad is a value, which we pass around in our program.
+Instances of a class, that is objects, are values.
+Classes, however, are not usually values.
+They certainly aren't in Scala.
