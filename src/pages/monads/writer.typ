@@ -1,6 +1,6 @@
 #import "../stdlib.typ": info, warning, exercise, solution
 == The Writer Monad 
-<writer-monad>
+<sec:monads:writer-monad>
 
 
 `cats.data.Writer`

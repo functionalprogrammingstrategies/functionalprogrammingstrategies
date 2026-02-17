@@ -3,6 +3,10 @@
 
 This case study is about dependency injection. This is a common problem in industrial systems.
 
+We're going to look at three characteristics: how we write code that requires dependencies, how we use code that requires dependencies, and how we provide dependencies.
+
+The discussion here is focused on language features that are broadly within the strategies we've already seen. This means we are not going to look at specific libraries, nor will we look at techniques code generation techniques such as macros. However we are going to look at first-class modules, and their implementation in Scala will introduce a new language feature: the self type.
+
 Derive the reader monad and constructor parameters.
 
 Dependency injection in interpreters.
@@ -28,7 +32,6 @@ In fact it's common for dependencies to only vary between different deployments,
 Get the code its dependencies.
 
 We only care about this if dependencies can change. This is often the case, at least for testing purposes, but if we don't need this flexibility we don't need dependency injection.
-
 
 
 == Approaches to Dependency Injection
