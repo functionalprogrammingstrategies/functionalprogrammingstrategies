@@ -115,9 +115,10 @@ Finally, to provide the dependencies we simply apply the reader monad to them.
 
 ```scala
 val database = DatabaseConnection(...)
-val program: Reader[DatabaseConnection, Unit] = updateUser(userId)
+val program: Reader[DatabaseConnection, Unit] =
+  updateUser(userId)
 
-program(database)
+program.run(database)
 ```
 
 The reader monad looks simple in this small example. However, just like constructor injection it does bring issues. The two main ones are transforming our code in monadic style, which is annoying to do at large scale, and the work we have to do to compose multiple different dependencies in the monad.
@@ -241,8 +242,8 @@ In languages without such good support, the reader monad might be a better solut
 There is one important difference between the reader monad and constructor injection.
 The reader monad is a value, which we pass around in our program.
 Instances of a class, that is objects, are values.
-Classes, however, are not usually values.
-They certainly aren't in Scala.
+Classes, however, are not values in most programming languages,
+and they certainly aren't in Scala.
 What would it mean for classes to be values in constructor injection?
 Let's return to the reader monad implementation of `getUser`, which was
 
@@ -265,11 +266,49 @@ A => F[B]
 ```
 
 which you probably recognize as the type of the function passed to `flatMap`.
-Following this thread takes us to implementing the reader monad in terms of klesli arrows, which was briefly mentioned in 
-@sec:monads:reader.
-However, let's go in a different direction.
+This type of function is sometimes called a Kleisli arrow, or just Kleisli for short.
+We briefly met this concept in @sec:monads:reader.
+It's implemented in Cats as the `Kleisli` type, and provides many useful methods for composition.
+For example, if we want to chain together several Kleisli's, we can do so with the `andThen` method.
+Here's a small example using the `Id` monad.
 
-If we were to represent the constructor injection code as values, that is as a functions, we might define functions like
+```scala mdoc:silent
+import cats.Id
+import cats.data.Kleisli
+
+val double: Kleisli[Id, Int, Int] =
+  Kleisli(x => x * 2)
+val intToString: Kleisli[Id, Int, String] =
+  Kleisli(x => x.toString)
+
+val doubleToString = double.andThen(intToString)
+```
+
+When we run `doubleToString` we get the composition of the two Kleisli's.
+
+```scala mdoc
+doubleToString.run(1)
+```
+
+Let's back to the reader monad. We were looking at the function
+
+```scala mdoc:nest:silent
+val getUser: UserId => Reader[DatabaseConnection, User] =
+  id => Reader(database => ???)
+```
+
+and saw that we could abstract this is `A => F[B]` and hence represent it as a `Kleisli`.
+However this is not what we usually want when using the reader monad.
+Turning `getUser` into an instance of `Kleisli` makes it more inconvenient to write and doesn't really get us anything in return.
+However, remember that `Reader[A, B]` is just a function `A => B`.
+We can restate this as `A => Id[B]` and then it to looks like a Kleisli arrow.
+This is the representation used in Cats; `Reader[A, B]` is a type alias for `Kleisli[Id, A, B]`.
+Let's be clear though: the reader monad is a function `A => B` and not a Kleisli; Kleisli arrows are more general than the reader monad.
+However, practically it is convenient to wrap reader monads instances with a Kleisli arrow and Cats does this decision in its implementation.
+
+In summary, we saw that we can find *two* Kleisli's within functions using the reader monad, and it's the one defined by the reader monad that is the more useful abstraction to make.
+Let's now see if there anything similar going on inside constructor injection.
+If we were to represent the constructor injection code as values, that is as a functions, we would define functions like
 
 ```scala mdoc:nest:silent
 val getUser: DatabaseConnection => UserId => User =
@@ -278,7 +317,7 @@ val getUser: DatabaseConnection => UserId => User =
 
 We could try to represent this as `Reader[DatabaseConnection, UserId => User]` but that's not a useful representation to work with.
 We can *uncurry*#footnote[
-    Currying is transformation from a function of multiple parameters, such as
+    Currying is a transformation from a function of multiple parameters, such as
     
 ``` scala:mdoc:silent
 (x: Int, y: Int, z: Int) => x + y + z
@@ -314,18 +353,62 @@ F[A] => B
 
 which is the dual of `flatMap`, sometimes known as `coflatMap`!
 
-In practice we'll find that the writer monad doesn't support the API we want. What we want is a *comonad*, usually called the environment comonad. It's simply a comonad defined on the tuple `(E, A)`, where `E` is the environment and `A` is the normal value. There is no `Environment` type in Cats, but there is a `Comonad` type class and `Comonad` instance defined on `Tuple2`. We can easily define our own `Environment` comonad with these tools.
+In practice we'll find that the writer monad doesn't support the API we want. What we want is an instance of a *comonad*, usually called the environment comonad. It's simply a comonad defined on the tuple `(E, A)`, where `E` is the environment and `A` is the normal value. There is no `Environment` type in Cats, but there is a `Comonad` type class and `Comonad` instance defined on `Tuple2`. We can easily define our own `Environment` comonad with these tools.
 
-```scala mdoc:silent
+```scala mdoc:silent:reset
 import cats.Comonad
 
 opaque type Environment[E, A] = (E, A)
+extension [E, A](e: Environment[E, A])
+  // ask gets the value of the environment
+  def ask: E = e(0)
+
 object Environment:
   def apply[E, A](environment: E, value: A) = (environment, value)
   def apply[E, A](tuple: (E, A)) = tuple
 
-  extension [E, A](e: Environment[E, A])
-    def environment: E = e(0)
-
-  given [E] => Comonad[[A] =>> Environment[E, A]] = summon[Comonad[[A] =>> (E, A)]]
+  given environmentComonad[E]: Comonad[[A] =>> Environment[E, A]] = summon[Comonad[[A] =>> (E, A)]]
 ```
+
+Now we can define `getUser` as
+
+```scala mdoc:invisible
+// Redefined because we had to reset for the opaque type above
+type UserId = Int
+type DatabaseConnection = String
+type User = String
+```
+```scala mdoc:silent
+import cats.syntax.all.*
+
+val getUser: Environment[DatabaseConnection, UserId] => User =
+  env =>
+    val database = env.ask
+    val id = env.extract
+    // Do something with database and id
+    ???
+```
+
+It won't be surprising to learn we can represent `F[A] => B`, where `F` is a comonad, as a co-Kleisli.
+So `getUser` can be implemented as
+
+```scala mdoc:silent:nest
+import cats.data.Cokleisli
+
+type DatabaseEnvironment[A] =
+  Environment[DatabaseConnection, A]
+
+val getUser: Cokleisli[DatabaseEnvironment, UserId, User] =
+  Cokleisli(env =>
+    val database = env.ask
+    val id = env.extract
+    // Do something with database and id
+    ???
+  )
+```
+
+This is precisely the dual of the reader monad as implemented in Cats,
+and the equivalent of constructor injection in a language without classes.
+
+This hopefully makes it clearer how constructor injection is related to the reader monad,
+and again shows us the importance of craft, as how we realize ideas in code is shaped by language features and idioms.
