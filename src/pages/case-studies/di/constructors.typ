@@ -1,4 +1,4 @@
-#import "../../stdlib.typ": href
+#import "../../stdlib.typ": href, styled-table
 == Constructors Injection and the Reader Monad
 
 In this section we'll look at two fundamental approaches to dependency injection: passing arguments to constructors, which is sometimes known as *constructor injection*, and the reader monad, which we met in @sec:monads:reader.
@@ -98,7 +98,7 @@ def saveUser(user: User): Reader[DatabaseConnection, Unit] =
   ???
 ```
 
-We can call `getUser` and `saveUser` as normal. However, as they now return instances of the reader monad we must use `flatMap` and the like to compose the results together. Our example `updateUser` method could look like
+We can call `getUser` and `saveUser` as normal. However, as they now return instances of the reader monad, we must use `flatMap` and the like to compose the results together. Our example `updateUser` method could look like
 
 ```scala mdoc:silent
 def updateUser(id: UserId): Reader[DatabaseConnection, Unit] =
@@ -167,7 +167,7 @@ They return a function requiring the dependency; hence we supply the dependency 
 This is the reader monad.
 
 In the reader monad world we end up with lots of functions that require dependencies.
-The reader monad handles this is by giving us combinators---`flatMap`, `map`, and friends---that allow us to compose these functions into a single function that takes all the needed dependencies.
+The reader monad handles this by giving us combinators---`flatMap`, `map`, and friends---that allow us to compose these functions into a single function that takes all the needed dependencies.
 
 Let's now look at moving the dependencies before the functions.
 
@@ -180,11 +180,21 @@ val saveUser: DatabaseConnection => User => Unit =
 ```
 
 In this version we must supply the `DatabaseConnection` dependency before the non-dependency parameters.
-We could work with this code in the reader monad, but it is substantially more annoying to do so.
-In the usual reader monad we only have to combine the results of calling the functions we want.
-In this encoding we have to reach inside the monads to actually call the functions we are after.
+We could work with this code in the reader monad.
+For example, we could define `getUser` as
 
-Let's simply this code.
+```scala mdoc:silent:nest
+val getUser: Reader[DatabaseConnection, UserId => User] =
+  Reader(database => id => ???)
+```
+
+However, it is substantially more annoying to work with this form.
+Instead of calling `getUser` directly, we now have to `run` it to access the `UserId => User` function that we want then call.
+In the usual reader monad we only have to combine the results of calling the functions we want.
+In this encoding we have to reach inside the monads to actually call the functions we are after,
+and to do so requires we have the dependency at hand---which we're trying to avoid.
+
+Let's go back to functions before we introduced the reader monad and try to simplify the code.
 Notice that both functions have the same first parameter.
 We can define a single function of the dependency, which in turn returns two functions.
 
@@ -211,12 +221,13 @@ abstract class UserDb {
   def saveUser(user: User): Unit
 }
 
-val userDb: DatabaseConnection => UserDb = database =>
-  new UserDb {
-    def getUser(id: UserId): User = ???
-  
-    def saveUser(user: User): Unit = ???
-  }
+val userDb: DatabaseConnection => UserDb =
+  database =>
+    new UserDb {
+      def getUser(id: UserId): User = ???
+    
+      def saveUser(user: User): Unit = ???
+    }
 ```
 
 At this point we should go ahead and define a normal class with a constructor parameter.
@@ -229,6 +240,8 @@ class UserDb(database: DatabaseConnection) {
 }
 ```
 
+We're back at constructor injection!
+
 To recap, constructor injection requires the dependency before the function, while the reader monad requires the dependency after the function.
 We can transform one into the other, as we've seen above, and therefore they are duals.
 
@@ -236,14 +249,13 @@ This duality illustrates the importance of craft.
 Both approaches are equivalent, as we have shown, but they are not equally idiomatic in any given language.
 In a language with good support for object-oriented programming, or codata as we might prefer to call it,
 constructor injection works very well.
-The core is that we can name the result type, the `UserDb`, so other functions can just require a value of that type.
 In languages without such good support, the reader monad might be a better solution, though it requires we rewrite our code in monadic style.
 
 There is one important difference between the reader monad and constructor injection.
 The reader monad is a value, which we pass around in our program.
 Instances of a class, that is objects, are values.
-Classes, however, are not values in most programming languages,
-and they certainly aren't in Scala.
+The class definition itself, however, is not a value in most programming languages,
+and it certainly isn't in Scala.
 What would it mean for classes to be values in constructor injection?
 Let's return to the reader monad implementation of `getUser`, which was
 
@@ -290,24 +302,24 @@ When we run `doubleToString` we get the composition of the two Kleisli's.
 doubleToString.run(1)
 ```
 
-Let's back to the reader monad. We were looking at the function
+Let's get back to the reader monad. We were looking at the function
 
 ```scala mdoc:nest:silent
 val getUser: UserId => Reader[DatabaseConnection, User] =
   id => Reader(database => ???)
 ```
 
-and saw that we could abstract this is `A => F[B]` and hence represent it as a `Kleisli`.
+and saw that we could abstract this as `A => F[B]` and hence represent it as a `Kleisli`.
 However this is not what we usually want when using the reader monad.
 Turning `getUser` into an instance of `Kleisli` makes it more inconvenient to write and doesn't really get us anything in return.
 However, remember that `Reader[A, B]` is just a function `A => B`.
-We can restate this as `A => Id[B]` and then it to looks like a Kleisli arrow.
+We can restate this as `A => Id[B]` and then it looks like a Kleisli arrow.
 This is the representation used in Cats; `Reader[A, B]` is a type alias for `Kleisli[Id, A, B]`.
 Let's be clear though: the reader monad is a function `A => B` and not a Kleisli; Kleisli arrows are more general than the reader monad.
-However, practically it is convenient to wrap reader monads instances with a Kleisli arrow and Cats does this decision in its implementation.
+However, practically it is convenient to wrap reader monads instances with a Kleisli arrow and Cats makes this decision in its implementation.
 
-In summary, we saw that we can find *two* Kleisli's within functions using the reader monad, and it's the one defined by the reader monad that is the more useful abstraction to make.
-Let's now see if there anything similar going on inside constructor injection.
+In summary, we saw that we can find *two* Kleislis within functions using the reader monad, and it's the one defined by the reader monad that is the more useful abstraction to make.
+Let's now see if there is anything similar going on inside constructor injection.
 If we were to represent the constructor injection code as values, that is as a functions, we would define functions like
 
 ```scala mdoc:nest:silent
@@ -336,7 +348,7 @@ val getUser: (DatabaseConnection, UserId) => User =
   (database, id) => ???
 ```
 
-This basically the method we originally started with. What if we think of the parameters as a tuple `(DatabaseConnection, UserId)`? This looks like the writer monad, introduced in @sec:monads:writer. We can try
+This is basically the method we originally started with. What if we think of the parameters as a tuple `(DatabaseConnection, UserId)`? This looks like the writer monad, introduced in @sec:monads:writer. We can try the following code
 
 ```scala mdoc:silent:nest
 import cats.data.Writer
@@ -353,7 +365,16 @@ F[A] => B
 
 which is the dual of `flatMap`, sometimes known as `coflatMap`!
 
-In practice we'll find that the writer monad doesn't support the API we want. What we want is an instance of a *comonad*, usually called the environment comonad. It's simply a comonad defined on the tuple `(E, A)`, where `E` is the environment and `A` is the normal value. There is no `Environment` type in Cats, but there is a `Comonad` type class and `Comonad` instance defined on `Tuple2`. We can easily define our own `Environment` comonad with these tools.
+In practice we'll find that the writer monad doesn't work for dependency injection.
+Although the `Writer[E, A]` has the underlying representation `(E, A)`, the intended semantics are different to what we're after.
+For example, the first type parameter of `Writer`, which we're using to represent the dependency, should have a `Monoid` instance which doesn't make sense for most dependencies.
+We'll also find ourselves needing `coflatMap`, which `Writer` doesn't provide.
+
+We want is a comonad instance that holds a tuple of dependency and value.
+What we are after is usually called the environment comonad.
+It's simply the comonad defined on the tuple `(E, A)`, where `E` is the environment and `A` is the normal value.
+There is no `Environment` type in Cats, but there is a `Comonad` type class and a `Comonad` instance defined on `Tuple2`.
+We can easily define our own `Environment` comonad with these tools.
 
 ```scala mdoc:silent:reset
 import cats.Comonad
@@ -389,7 +410,7 @@ val getUser: Environment[DatabaseConnection, UserId] => User =
     ???
 ```
 
-It won't be surprising to learn we can represent `F[A] => B`, where `F` is a comonad, as a co-Kleisli.
+It won't be surprising to learn that we can represent `F[A] => B`, where `F` is a comonad, as a co-Kleisli.
 So `getUser` can be implemented as
 
 ```scala mdoc:silent:nest
@@ -407,8 +428,30 @@ val getUser: Cokleisli[DatabaseEnvironment, UserId, User] =
   )
 ```
 
-This is precisely the dual of the reader monad as implemented in Cats,
-and the equivalent of constructor injection in a language without classes.
+This is precisely the dual of the reader monad as implemented in Cats.
+It's also the equivalent of constructor injection in a language without classes.
+We use `ask` to get the environment, which is the equivalent of the constructor parameter in constructor injection,
+while `extract` gets the value that is equivalent to the method parameter.
+
+We've covered a lot of ground, so let's quickly review the transform:
+
+- We started with `(E, A) => B`, where `E` is the dependency.
+- Moving the dependency after `A` gives `A => E => B`, the reader monad.
+- Moving the dependency before `A` gives `E => A => B`, constructor injection.
+- Uncurrying returns to `(E, A) => B`, the environment comonad.
+
+We can also relate monadic and comonadic dependency injection with the following table:
+
+#styled-table(
+    columns: (auto, auto, auto),
+    alignment: left,
+    table.header([Concept], [Monadic], [Comonadic]),
+    [Type], [`Reader[E, A]`], [`Environment[E, A]`],
+    [Representation], [`E => A`], [`(E, A)`],
+    [Dependency], [Supplied after], [Supplied before],
+    [Composition], [`flatMap`], [`coflatMap`],
+    [Arrow], [`A => F[B]`, Kleisli], [`F[A] => B`, Cokleisli],
+)
 
 This hopefully makes it clearer how constructor injection is related to the reader monad,
 and again shows us the importance of craft, as how we realize ideas in code is shaped by language features and idioms.
