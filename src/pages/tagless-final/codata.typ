@@ -1,9 +1,11 @@
-#import "../stdlib.typ": info, warning, solution
+#import "../stdlib.typ": info, warning, solution, href
 == Codata Interpreters
 
 
 In this section we'll explore codata interpreters, using a DSL for terminal interaction as a case study.
-The terminal is familiar to most programmers, and terminal applications are common for developer focused tools. Most terminal features are controlled by writing so-called escape codes to the terminal. However, applications benefit from higher-level abstractions, motivating textual user interface (TUI) libraries that present a more ergonomic interface[^tuis]. Our library will showcase codata interpreters, monads, and the central role of designing for composition and reasoning. 
+The terminal is familiar to most programmers, and terminal applications are common for developer focused tools. Most terminal features are controlled by writing so-called escape codes to the terminal. However, applications benefit from higher-level abstractions, motivating textual user interface (TUI) libraries that present a more ergonomic interface#footnote[
+    If you're interested in TUI libraries you might like to look at the brilliantly named #href("https://github.com/ratatui/ratatui")[ratatui]  for Rust, Haskell's #href("https://github.com/jtdaugherty/brick")[brick], or #href("https://textual.textualize.io/")[Textual] for Python.
+]. Our library will showcase codata interpreters, monads, and the central role of designing for composition and reasoning. 
 
 
 === The Terminal
@@ -13,7 +15,7 @@ The modern terminal is an accretion of features that started with the VT-100 in 
 Most terminal features are accessed by reading and writing ANSI escape codes, which are sequence of characters starting with the escape character.
 We will work only with escape codes that change the text style.
 This allows us to produce interesting output, and raises all the design issues we want to address, but keeps the system simple.
-The ideas here are extended to a more complete system in the #link("https://www.creativescala.org/terminus/")[Terminus] library.
+The ideas here are extended to a more complete system in the #href("https://www.creativescala.org/terminus/")[Terminus] library.
 
 The code below is written so that with a single change it can pasted into a file and run with any recent version of Scala with just `scala <filename>`.
 The required change is to add the `@main` annotation before the method `go`.
@@ -28,7 +30,7 @@ to
 (This is due to a limitation of the software that compiles the code in the book.)
 
 The examples should work with any terminal from the last 40 odd years.
-If you're on Windows you can use Windows Terminal, #link("https://learn.microsoft.com/en-us/windows/wsl/about")[WSL], or another terminal that runs on Windows such as #link("https://wezfurlong.org/wezterm/index.html")[WezTerm].
+If you're on Windows you can use Windows Terminal, #href("https://learn.microsoft.com/en-us/windows/wsl/about")[WSL], or another terminal that runs on Windows such as #href("https://wezfurlong.org/wezterm/index.html")[WezTerm].
 
 
 === Color Codes
@@ -396,7 +398,3 @@ Program.print("Hello").map(_ => 42)
 Using the native representation of programs (i.e. functions) gives us the entire Scala language for free. In a data representation we have to reify every kind of expression we wish to support. There is a downside to this as well: we get Scala semantics whether we like them or not. A codata representation would not be appropriate if we wanted to make an exotic language that worked in a different way.
 
 We could factor the interpreter in different ways, and it would still be a codata interpreter. For example, we could put a method to write to the terminal on the `Terminal` type. This would give us a bit more flexibility as changing the implementation of `Terminal` could, say, write to a network socket or a terminal embedded in a browser. We still have the limitation that we cannot create truly different interpretations, such as serializing programs to disk, with the codata approach. We'll address this limitation in the next section where we look at tagless final.
-
-
-[^tuis]: If you're interested in #link("https://en.wikipedia.org/wiki/Text-based_user_interface")[TUI] libraries you might like to look at the brilliantly named #link("https://github.com/ratatui/ratatui")[ratatui]  for Rust, #link("https://github.com/jtdaugherty/brick")[brick] for Haskell, or #link("https://textual.textualize.io/")[Textual] for Python.
-
