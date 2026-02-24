@@ -6,7 +6,7 @@ In the previous section we saw that
 when call `product` on a type that
 has a `Monad` instance
 we get sequential semantics.
-This makes sense from the point-of-view
+This makes sense from the point of view
 of keeping consistency with 
 implementations of `product` in terms of `flatMap` and `map`.
 However it's not always what we want.
