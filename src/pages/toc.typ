@@ -124,6 +124,7 @@
 #include  "case-studies/di/providing.typ"
 #include  "case-studies/di/interpreters.typ"
 #include  "case-studies/di/effects.typ"
+#include  "case-studies/di/conclusions.typ"
 #include  "case-studies/error-handling/index.typ"
 #include  "case-studies/map-reduce/index.typ"
 #include  "case-studies/validation/index.typ"
