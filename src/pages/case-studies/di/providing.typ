@@ -1,13 +1,14 @@
 == Providing Dependencies
 
-In the previous section we looked at two approaches for requiring dependencies, constructor injection and the reader monad, and saw they were duals. We now look at the other side: how do we provide dependencies to code that requires them. We saw the basic answer in the previous section---pass the values manually---but this quickly becomes tedious. This section develops progressively better solutions.
+In the previous section we looked at two approaches for requiring dependencies, constructor injection and the reader monad, and saw they were duals. We now look at the other side of dependencing injection: providing dependencies to code that requires them. We saw the basic answer in the previous section---pass the values manually---but this quickly becomes tedious. This section develops better solutions.
 
 
-=== The Two Problems of Providing Dependencies
+=== The Two Problems of Dependency Provision
 
 Manual dependency provision has two distinct problems: tramp data and the wiring problem.
+Let's look at each in turn.
 
-Tramp data is data that a method or class doesn't directly require, but needs because it is required by some method or class that it calls. In other words, tramp data is a *transitive dependency*. In the previous section we used the example of two methods that work with a database connection:
+Tramp data is data that a method or class doesn't directly require, but needs because it is required by some method or class that it calls. In other words, tramp data is a *transitive dependency*. In the previous section we introduced two example methods working with a database connection dependency:
 
 ```scala mdoc:invisible
 type UserId = Int
@@ -22,7 +23,7 @@ def saveUser(database: DatabaseConnection, user: User): Unit =
   ???
 ```
 
-Here's an example of a method using these two methods.
+We might use these methods as show below.
 
 ```scala mdoc:silent
 def updateUser(database: DatabaseConnection, id: UserId): Unit =
@@ -31,9 +32,9 @@ def updateUser(database: DatabaseConnection, id: UserId): Unit =
   saveUser(database, user)
 ```
 
-Notice that `updateUser` requires a `DatabaseConnection` but doesn't directly use that connection; the requirement is there only so that the connection can be passed to the two methods that do use it. This is an example of tramp data.
+Notice that `updateUser` requires a `DatabaseConnection` but doesn't directly use that connection; the requirement is there only so that the connection can be passed to the methods that do use it. This is an example of tramp data.
 
-Constructor injection, which we saw in the previous section, can be a solution to tramp data. We move the methods into a `UserDb` class that holds the `DatabaseConnection`, and `updateUser` takes a `UserDb` rather than a raw connection. Now `updateUser` only holds what it directly needs.
+Constructor injection, which we saw in the previous section, can be a solution to tramp data. If we move the requirement for a `Databaseconnection` into the constructor of a `UserDb` class, `updateUser` can require a `UserDb` rather than a raw connection. Now `updateUser` only holds what it directly needs.
 
 ```scala mdoc:silent:nest
 class UserDb(database: DatabaseConnection):
@@ -49,12 +50,12 @@ def updateUser(userDb: UserDb, id: UserId): Unit =
   userDb.saveUser(user)
 ```
 
-However, constructor injection does not address *the wiring problem*. At the entry point of our program---typically `main`---we must manually construct the entire dependency graph: instantiate each value in the right order and pass it to the constructors that need it. In a realistic application this graph can be many levels deep, and the wiring code becomes a significant maintenance burden in its own right. It is this problem that motivates the majority of the rest of this section.
+However, constructor injection does not address *the wiring problem*. At the entry point of our program---typically `main`---we must manually construct the entire dependency graph: instantiate each value in the right order and pass it to the constructors that need it. In a realistic application this graph can be many levels deep, and the wiring code becomes a significant maintenance burden in its own right. It is this problem that motivates the remainder of this section.
 
 
 === Contextual Abstraction
 
-Scala's contextual abstraction facilities, first introduced in @sec:type-classes, are precisely a mechanism for threading values through a call stack. As such, they directly address the wiring problem. The approach is straightforward: `using` clauses express a requirement for a dependency while `given` instances provide the implementations.
+Scala's contextual abstraction facilities, first introduced in @sec:type-classes, are precisely a mechanism for threading values through a call stack. As such, they directly address the wiring problem. The approach is straightforward: `using` clauses express a requirement for a dependency while `given` instances provide the implementations. The compiler will match up `given` instances to `using` clauses, doing the wiring for us.
 
 Let us return to our running example, and rework it to use contextual abstraction. We start by expressing our dependencies as `using` clauses.
 
@@ -77,7 +78,7 @@ Notice that the `UserDb` class uses a `using` parameter in its constructor. Many
 Now, so long as the dependencies are in the `given` scope, the compiler will provide them for us.
 In the code below I define the dependencies as anonymous `given` values, declaring only their type.
 Notice that I don't explicitly pass a `DatabaseConnection` to `UserDb`.
-The compiler picks up the `given` value in scope.
+The compiler picks up the `given` value in scope, wiring it up for us.
 
 ```scala mdoc:invisible:nest
 val aDatabaseConnection = "database-connection"
@@ -103,15 +104,15 @@ given DatabaseConnection = aDatabaseConnection
 given UserDb = UserDb()
 ```
 
-When I call `updateUser` the compiler provides the `UserDb` dependency.
+When we call `updateUser` the compiler provides the `UserDb` dependency.
 
 ```scala mdoc:silent
 updateUser(aUserId)
 ```
 
-This approach works well in many cases, but there is an important limitation: recall that `given` values are matched to `using` clauses by the type of the parameter. This means that multiple different values of the same type cannot be distinguished by the compiler. Imagine if we had two different database connections, perhaps one for low volume writes, and one to a cluster of read-only replicas for reads. If they both have the type `DatabaseConnection` we cannot use contextual abstraction to distinguish them. There are two solutions: we can explicitly pass parameters, or we can distinguish based on type.
+This approach works well in many cases, but there is an important limitation: recall that `given` values are matched to `using` clauses by the type of the parameter. This means that multiple different `given` values of the same type cannot be distinguished. Imagine if we had two different database connections, perhaps one to the master database for low volume writes, and one to a cluster of read-only replicas for reads. If they both have the type `DatabaseConnection` we cannot use contextual abstraction to distinguish them. There are two solutions: we can explicitly pass parameters, or we can distinguish based on type.
 
-Explicitly passing parameters means exactly what it says: instead of letting the compiler find the `given` value we specify the value to use for the `using` clause. I do not recommend this approach for several reasons. Firstly, we are back in the inconvenience of manually providing dependencies, which we wish to escape. More importantly, this is a fragile practice. It is easy to overlook a case where we should manually provide a dependency, but if there is a `given` value in scope the compiler will automatically use it instead of giving us a compilation error.
+Explicitly passing parameters means exactly what it says: instead of letting the compiler find the `given` value we specify the value to use for the `using` clause. I do not recommend this approach for several reasons. Firstly, we are back in the inconvenience of manually providing dependencies. More importantly, this is a fragile practice. It is easy to overlook a case where we should manually provide a dependency, but if there is a `given` value in scope the compiler will automatically use it instead of giving us a compilation error.
 
 The alternative is to distinguish the values by type, perhaps by using an opaque type as described in @sec:types. This is my preferred solution. It clearly distinguishes the values to the compiler, and the type also conveys meaning to the developer.
 
@@ -120,9 +121,9 @@ Contextual abstraction provides a good solution to providing dependencies. Howev
 
 === Bundling Dependencies
 
-Contextual abstraction removes some of the tedium of providing dependencies but it has a limitations that is not so apparent in small examples. Dependencies are usually thought of as a set of related types. We often want to swap out the entire set in one go. For example, we'll use different dependencies in testing and production, and if our application is deployed across multiple data centers, the dependencies will vary by deployment. Representing them as a scattered collection of `given` instances tends to make this difficult to do. 
+Contextual abstraction removes some of the tedium of providing dependencies but it has a limitations that is not so apparent in small examples. Dependencies are usually thought of as a set of related types. We often want to swap out the entire set in one go. For example, we'll use different dependencies in testing and production, and if our application is deployed across multiple regions the dependencies will vary by data center. Representing them as a scattered collection of `given` instances tends to make this difficult to maintain. 
 
-This problem arises because we cannot abstract over a parameter list: parameter lists are not values and, as such, there is no way to define a type for a set of parameters. The solution is simply to stop working with parameter lists, and work instead with a single value that represents all our dependencies. In many cases a simple `case class` will do the job. Large programs may require something more elaborate, so in the next two sections we look at techniques for working with this: the so-called Cake pattern, and tagless final style, which we first met in @sec:tagless-final.
+This problem arises because we cannot abstract over a parameter list: parameter lists are not values and, as such, there is no way to define a type for a set of parameters. The solution is simply to stop working with parameter lists, and work instead with a single value that represents all our dependencies. In many cases a simple `case class` will do the job, and this is what I recommend in most situations. Large programs may require something more elaborate, so in the next two sections we look at techniques for working with this: the so-called Cake pattern, and tagless final style, which we first met in @sec:tagless-final.
 
 
 === The Cake Pattern
