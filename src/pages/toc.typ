@@ -122,6 +122,7 @@
 #include  "case-studies/di/index.typ"
 #include  "case-studies/di/requiring.typ"
 #include  "case-studies/di/providing.typ"
+#include  "case-studies/di/bundling.typ"
 #include  "case-studies/di/interpreters.typ"
 #include  "case-studies/di/effects.typ"
 #include  "case-studies/di/conclusions.typ"

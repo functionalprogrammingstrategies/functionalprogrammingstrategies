@@ -117,20 +117,3 @@ Explicitly passing parameters means exactly what it says: instead of letting the
 The alternative is to distinguish the values by type, perhaps by using an opaque type as described in @sec:types. This is my preferred solution. It clearly distinguishes the values to the compiler, and the type also conveys meaning to the developer.
 
 Contextual abstraction provides a good solution to providing dependencies. However, as a program evolves we will encounter another problem: that of maintaining dependencies.
-
-
-=== Bundling Dependencies
-
-Contextual abstraction removes some of the tedium of providing dependencies but it has a limitations that is not so apparent in small examples. Dependencies are usually thought of as a set of related types. We often want to swap out the entire set in one go. For example, we'll use different dependencies in testing and production, and if our application is deployed across multiple regions the dependencies will vary by data center. Representing them as a scattered collection of `given` instances tends to make this difficult to maintain. 
-
-This problem arises because we cannot abstract over a parameter list: parameter lists are not values and, as such, there is no way to define a type for a set of parameters. The solution is simply to stop working with parameter lists, and work instead with a single value that represents all our dependencies. In many cases a simple `case class` will do the job, and this is what I recommend in most situations. Large programs may require something more elaborate, so in the next two sections we look at techniques for working with this: the so-called Cake pattern, and tagless final style, which we first met in @sec:tagless-final.
-
-
-=== The Cake Pattern
-
-TODO: One solution to the bundling problem is to compose dependency modules using trait composition---the Cake pattern (or ML-style modules). Show how traits define interfaces for bundles of related operations, and how `extends` and self-types allow composing several such bundles into a single "application" object. The Cake pattern makes the bundle itself a first-class value that can be provided as a single `given` instance. Note connections to codata / objects-as-modules from @sec:codata.
-
-
-=== Tagless Final
-
-TODO: Recall tagless final from @sec:tagless-final. Show that the tagless final algebra is exactly a bundle of related operations parameterized by an abstract effect type `F[_]`. Providing a `given` instance of the algebra is providing the bundle of dependencies. The `F[_]` parameter additionally abstracts over *how* the effects are executed, which the reader monad approach cannot express. This makes tagless final a natural DI solution that grows out of the bundling problem.
