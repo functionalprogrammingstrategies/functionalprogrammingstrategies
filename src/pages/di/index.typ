@@ -1,7 +1,7 @@
-#import "../../stdlib.typ": info, warning, solution, chapter
+#import "../stdlib.typ": info, warning, solution, chapter
 #chapter[Dependency Injection] <sec:di>
 
-This case study is about dependency injection. This is a common problem in industrial systems.
+This chapter is about dependency injection. This is a common problem in large code bases.
 
 We're going to look at three characteristics: how we write code that requires dependencies, how we use code that requires dependencies, and how we provide dependencies.
 

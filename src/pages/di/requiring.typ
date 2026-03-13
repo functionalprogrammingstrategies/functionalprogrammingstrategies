@@ -1,4 +1,4 @@
-#import "../../stdlib.typ": href, styled-table
+#import "../stdlib.typ": href, styled-table
 == Constructors Injection and the Reader Monad
 
 In this section we'll look at two fundamental approaches to dependency injection: passing arguments to constructors, which is sometimes known as *constructor injection*, and the reader monad, which we met in @sec:monads:reader.

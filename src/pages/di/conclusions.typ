@@ -1,4 +1,4 @@
-#import "../../stdlib.typ": narrative-cite
+#import "../stdlib.typ": narrative-cite
 == Conclusions
 
 
