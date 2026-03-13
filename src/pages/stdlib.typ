@@ -120,6 +120,12 @@
 // #chapter[Name] <sec:name>
 #let chapter(name) = heading(depth: 1, supplement: "Chapter")[#name]
 
+// A case study heading
+//
+// Typical use is
+// #case-study[Name] <sec:case-study:name>
+#let case-study(name) = heading(depth: 1, supplement: "Chapter")[Case Study: #name]
+
 // A part heading
 //
 // Typical use is
