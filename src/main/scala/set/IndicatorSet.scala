@@ -1,7 +1,9 @@
 package set
 
-final class IndicatorSet[A](indicator: A => Boolean, elements: Set[A])
-    extends Set[A] {
+final class IndicatorSet[A](
+    indicator: A => Boolean,
+    elements: Set[A]
+) extends Set[A]:
 
   def contains(elt: A): Boolean =
     indicator(elt) || elements.contains(elt)
@@ -11,7 +13,6 @@ final class IndicatorSet[A](indicator: A => Boolean, elements: Set[A])
 
   def union(that: Set[A]): Set[A] =
     new IndicatorSet(indicator, that.union(elements))
-}
-object IndicatorSet {
-  def apply[A](f: A => Boolean): Set[A] = new IndicatorSet(f, ListSet.empty)
-}
+object IndicatorSet:
+  def apply[A](f: A => Boolean): Set[A] =
+    new IndicatorSet(f, ListSet.empty)

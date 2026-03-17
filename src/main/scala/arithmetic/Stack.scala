@@ -1,7 +1,7 @@
 package arithmetic
 
-object Stack {
-  enum Expression extends arithmetic.Expression[Expression] {
+object Stack:
+  enum Expression extends arithmetic.Expression[Expression]:
     def +(that: Expression): Expression =
       Add(this, that)
     def *(that: Expression): Expression =
@@ -16,16 +16,15 @@ object Stack {
     case Subtract(left: Expression, right: Expression)
     case Divide(left: Expression, right: Expression)
     case Literal(value: Double)
-  }
-  object Expression extends arithmetic.ExpressionConstructors[Expression] {
+  object Expression
+      extends arithmetic.ExpressionConstructors[
+        Expression
+      ]:
     def literal(value: Double): Expression =
       Literal(value)
-  }
 
-  enum Op {
+  enum Op:
     case Add
     case Mul
     case Div
     case Sub
-  }
-}

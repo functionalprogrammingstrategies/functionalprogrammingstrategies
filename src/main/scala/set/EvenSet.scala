@@ -1,6 +1,6 @@
 package set
 
-final class EvenSet(elements: Set[Int]) extends Set[Int] {
+final class EvenSet(elements: Set[Int]) extends Set[Int]:
 
   def contains(elt: Int): Boolean =
     (elt % 2 == 0) || elements.contains(elt)
@@ -10,7 +10,5 @@ final class EvenSet(elements: Set[Int]) extends Set[Int] {
 
   def union(that: Set[Int]): Set[Int] =
     EvenSet(that.union(elements))
-}
-object EvenSet {
+object EvenSet:
   val evens: Set[Int] = EvenSet(ListSet.empty)
-}

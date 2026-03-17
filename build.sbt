@@ -154,6 +154,7 @@ val build =
 build / fileInputs += pages.value
 build := Def
   .sequential(
+    scalafmtAll,
     typstToMd,
     mdoc.toTask(""),
     mdToTypst,

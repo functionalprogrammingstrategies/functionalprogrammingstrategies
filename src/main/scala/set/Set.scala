@@ -1,6 +1,6 @@
 package set
 
-trait Set[A] {
+trait Set[A]:
 
   /** True if this set contains the given element */
   def contains(elt: A): Boolean
@@ -10,4 +10,3 @@ trait Set[A] {
 
   /** Construct the union of this and that set */
   def union(that: Set[A]): Set[A]
-}
