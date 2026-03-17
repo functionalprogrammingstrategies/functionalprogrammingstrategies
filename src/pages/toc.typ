@@ -127,6 +127,8 @@
 #include  "parts/part4.typ"
 #include  "usability/index.typ"
 #include  "case-studies/stream/index.typ"
+#include  "case-studies/stream/design.typ"
+#include  "case-studies/stream/implementation.typ"
 #include  "case-studies/testing/index.typ"
 #include  "case-studies/error-handling/index.typ"
 #include  "case-studies/map-reduce/index.typ"
