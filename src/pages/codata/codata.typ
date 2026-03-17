@@ -4,7 +4,7 @@
 
 Data describes what things are, while codata describes what things can do. 
 
-We have seen that data is defined in terms of constructors producing elements of the data type. Let's take a very simple example: a `Bool` is either `True` or `False`. We know we can represent this in Scala as
+We have seen that data is defined in terms of constructors producing values of the data type. Let's take a very simple example: a `Bool` is either `True` or `False`. We know we can represent this in Scala as
 
 ```scala mdoc:silent
 enum Bool {
@@ -13,10 +13,12 @@ enum Bool {
 }
 ```
 
-The definition tells us there are two ways to construct an element of type `Bool`.
-Furthermore, if we have such an element we can tell exactly which case it is, by using a pattern match for example. Similarly, if the instances themselves hold data, as in `List` for example, we can always extract all the data within them. Again, we can use pattern matching to achieve this.
+The definition tells us there are two ways to construct a value of type `Bool`.
+Furthermore, if we have such a value we can tell exactly which case it is, by using pattern matching.
+Similarly, if the values themselves hold data, as in `List`, we can always extract all this nested data.
+Again, we can use pattern matching for this.
 
-Codata, in contrast, is defined in terms of operations we can perform on the elements of the type. These operations are sometimes called *destructors* (which we've already encountered), *observations*, or *eliminators*. A common example of codata is a data structure such as a set. We might define the operations on a `Set` with elements of type `A` as:
+Codata, in contrast, is defined in terms of operations we can perform on the values of the type. These operations are called *destructors* (which we've already encountered), *observations*, or *eliminators*. A common example of codata is a data structure such as a set. We might define the operations on a `Set` with elements of type `A` as:
 
 - `contains`, which takes a `Set[A]` and an element `A` and returns a `Boolean` indicating if the set contains the element;
 - `insert`, which takes a `Set[A]` and an element `A` and returns a `Set[A]` containing all the elements from the original set and the new element; and
@@ -30,7 +32,8 @@ trait Set[A] {
   /** True if this set contains the given element */
   def contains(elt: A): Boolean
   
-  /** Construct a new set containing all elements in this set and the given element */
+  /** Construct a new set containing all elements in this set
+    * and the given element */
   def insert(elt: A): Set[A]
   
   /** Construct the union of this and that set */
@@ -38,11 +41,16 @@ trait Set[A] {
 }
 ```
 
-This definition does not tell us anything about the internal representation of the elements in the set. It could use a hash table, a tree, or something more exotic. It does, however, tell us what we can do with the set. We know we can take the union but not the intersection, for example. 
+This definition does not tell us anything about the internal representation of the set. It could use a hash table, a tree, or something more exotic. It does, however, tell us what we can do with the set. We know we can take the union but not the intersection, for example. 
 
-If you come from the object-oriented world you might recognize the description of codata above as programming to an interface. In some ways codata is just taking concepts from the object-oriented world and presenting them in a way that is consistent with the rest of the functional programming paradigm. However, this does not mean adopting all the features of object-oriented programming. We won't use state, which is difficult to reason about. We also won't use implementation inheritance either, for the same reason. In our subset of object-oriented programming we'll either be defining interfaces (which may have default implementations of some methods) or final classes that implement those interfaces. Interestingly, this subset of object-oriented programming is often recommended by advocates of object-oriented programming#footnote[For example, #narrative-cite(<bloch17:effective>) suggests developers "minimize mutability" and "favor composition over [implementation] inheritance". Together these form the subset of object-oriented programming that we consider to be codata.].
+If you come from the object-oriented world you might recognize codata as programming to an interface.
+In some ways codata is just taking concepts from the object-oriented world and presenting them in a way that is consistent with the rest of the functional programming paradigm.
+However, this does not mean adopting all the features of object-oriented programming.
+We won't use state, which is difficult to reason about.
+We also won't use implementation inheritance, for the same reason. 9
+In our subset of object-oriented programming we'll either be defining interfaces (which may have default implementations of some methods) or `final` classes that implement those interfaces. Interestingly, this subset of object-oriented programming is often recommended by advocates of object-oriented programming#footnote[For example, #narrative-cite(<bloch17:effective>) suggests developers "minimize mutability" and "favor composition over [implementation] inheritance". Together these form the subset of object-oriented programming that we consider to be codata.].
 
-Let's now be a little more precise in our definition of codata, which will make the duality between data and codata clearer. Remember the definition of data: it is defined in terms of sums (logical ors) and products (logical ands). We can transform any data into a sum of products, which is disjunctive normal form. Each product in the sum is a constructor, and the product itself is the parameters that the constructor accepts. Finally, we can think of constructors as functions which take some arbitrary input and produce an element of data. Our end point is a sum of functions from arbitrary input to data.
+Let's now be a little more precise in our definition of codata, which will make the duality between data and codata clearer. Remember the definition of data: it is defined in terms of sums (logical ors) and products (logical ands). We can transform any data into a sum of products, which is disjunctive normal form. Each product in the sum is a constructor, and the product itself is the parameters that the constructor accepts. Finally, we can think of constructors as functions which take some arbitrary input and produce an element of data. Our end point is a sum of functions from some input to data.
 
 More concretely, if we are constructing an element of some data type `A` we call one of the constructors
 

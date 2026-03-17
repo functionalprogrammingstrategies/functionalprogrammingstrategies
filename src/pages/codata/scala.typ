@@ -23,7 +23,7 @@ The abstract definition of this, which is a product of functions, defines a `Set
 
 Notice that the first parameter of each function is the type we are defining, `Set[A]`.
 
-The translation to Scala is:
+The translation back to Scala is:
 
 - the overall type becomes a `trait`; and
 - each function becomes a method on that `trait`. The first parameter is the hidden `this` parameter, and other parameters become normal parameters to the method.
@@ -104,8 +104,8 @@ trait Set[A] {
 }
 ```
 
-Once again we could make this a `final` method. In this case it's probably more justified as it's difficult to imagine a more efficient implementation.
+We could make this a `final` method; in this case it's better justified as it's difficult to imagine a more efficient implementation.
 
-Data and codata are both realized in Scala as variations of the same language features of classes and objects. This means we can define types that have properties of both data and codata. We have actually already done this. When we define data we must define names for the fields within the data, thus defining destructors. Most languages are same, not making a hard distinction between data and codata.
+Data and codata in Scala are both realized as variations of the same language features of classes and objects. This means we can define types that have properties of both data and codata. We have actually already done this. When we define data we must define names for the fields within the data, thus defining destructors. Most languages do not make a hard distinction between data and codata, though some research languages do.
 
 Part of the appeal, I think, of classes and objects is that they can express so many conceptually different abstractions with the same language constructs. This gives them a surface appearance of simplicity; it seems we need to learn only one abstraction to solve a huge of number of coding problems. However this apparent simplicity hides real complexity, as this variety of uses forces us to reverse engineer the conceptual intention from the code. 

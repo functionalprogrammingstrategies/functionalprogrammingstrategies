@@ -25,4 +25,4 @@ Once we can create codata, we'll see how to work with it using structural recurs
 Next we will look at transforming algebraic data to codata, and vice versa.
 We will finish by examining differences in extensibility.
 
-A quick note about terminology before we proceed. We might expect to use the term algebraic codata for the dual of algebraic data, but conventionally just codata is used. I assume this is because data is usually understood to have a wider meaning than just algebraic data, but codata is not used outside of programming language theory. For simplicity and symmetry, within this chapter I'll just use the term data to refer to algebraic data types.
+A quick note about terminology. We might expect to use the term algebraic codata for the dual of algebraic data, but codata alone is the conventional usage. I assume this is because data is usually understood to have a wider meaning than algebraic data, but the term codata is not used outside of programming language theory. For simplicity and symmetry, within this chapter I'll use the term data to refer to algebraic data types.
