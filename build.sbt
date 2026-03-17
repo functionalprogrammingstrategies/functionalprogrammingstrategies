@@ -9,7 +9,7 @@ import java.io.File
 ThisBuild / organization := "com.scalawithcats"
 ThisBuild / version := "0.0.1"
 
-ThisBuild / scalaVersion := "3.7.3"
+ThisBuild / scalaVersion := "3.8.2"
 
 ThisBuild / useSuperShell := false
 Global / onChangedBuildSource := ReloadOnSourceChanges

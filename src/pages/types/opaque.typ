@@ -268,15 +268,8 @@ We'll almost certainly need to convert from our opaque type back to its underlyi
 I've seen a few conventions for naming such a method; `value` and `get` are popular.
 However, I prefer a more descriptive `toType`, replacing `Type` with the concrete type name,
 as this extends to conversions to other types.
-For `EmailAddress` this means an extension method `toString`, as shown below.
-Notice that the method simply returns the `address` value,
-once showing the distinction between the type and it's representation as a value.
-
-```scala mdoc:silent
-extension (address: EmailAddress) {
-  def toString: String = address
-}
-```
+For `EmailAddress` this would mean an extension method `toString`,
+but every type in Scala already has this method so there is no need to define it.
 
 
 === Beyond Opaque Types

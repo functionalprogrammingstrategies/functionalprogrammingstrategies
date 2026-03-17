@@ -16,6 +16,7 @@ Finally, thanks to the following who sponsored my work or contributed with corre
 
 Aleksandr Andreev,
 Charles Adetiloye,
+Jamie Lawson,
 Johanna Odersky,
 Lunfu Zhong,
 Maciej Gorywoda ,
