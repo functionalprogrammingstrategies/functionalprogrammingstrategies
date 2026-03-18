@@ -17,9 +17,9 @@ We have enough principles to get started. Let's now turn to the basic strategies
 - interpreters (@sec:interpreters); and
 - contextual abstraction (@sec:type-classes).
 
-How do can we apply them to reactive programming? Let's start from the top. We've already decided we're building a DSL for programs, not a data structure, and therefore we should use codata. We could arrive at the same conclusion by considering we want to work with unbounded streams of data. To make the following discussion clearer, let's give the name `Stream` the type we're creating. Don't confuse this with the type of the same name we saw in @sec:codata-structural. They are related but ultimately different.
+How can we apply them to reactive programming? Let's start from the top. We've already decided we're building a DSL for programs, not a data structure, and therefore we should use codata. We could arrive at the same conclusion by considering we want to work with unbounded streams of data. To make the following discussion clearer, let's give the name `Stream` the type we're creating. Don't confuse this with the type of the same name we saw in @sec:codata-structural. They are related but ultimately different.
 
-Our next strategy is the interpreter. Is this appropriate for our reactive `Stream`? We're already decided we're building a domain specific language, so yes, it is appropriate. We also consider this decision from a different angle. An interpreter means a separation between description and action, which in this context means we describe the structure of the stream processing graph before we run it. This seems like a good thing in our situation: it means the graph is fully constructed before it starts running, and therefore won't lose data because the graph isn't complete when the first data arrives.
+Our next strategy is the interpreter. Is this appropriate for our reactive `Stream`? Yes, that is one of the principles we decided upon. We can also consider this decision from a different angle. An interpreter means a separation between description and action, which in this context means we describe the structure of the stream processing graph before we run it. This seems like a good thing in our situation: it means the graph is fully constructed before it starts running, and therefore won't lose data because the graph isn't complete when the first data arrives.
 
 The implication of using the interpreter strategy is we need to think about the elements of our algebra: the introduction forms, combinators, and elimination forms. We'll make a mental note to come back to this and move on to the next strategy.
 
@@ -80,7 +80,7 @@ trait Stream[A]:
   def foldLeft[B](zero: B)(f: (B, A) => B): B
 ```
 
-We now need some introduction forms, or constructors are they are more often known. This gets interesting because it's here that we connect our `Stream` to the outside world: the network sockets and keyboard events that produce the raw input we'll work with. However we run into a different limitation: integrating with the outside world is complex, and that complexity is counter to the focus on essentials that we want in a case study. So, for now we going to use a single constructor that converts an `Iterator` to a `Stream`. We're choosing `Iterator` because it has internal state, and so will illustrate some of the issues the come with interacting with an stateful world.
+We now need some introduction forms, or constructors as they are more often known. This gets interesting because it's here that we connect our `Stream` to the outside world: the network sockets and keyboard events that produce the raw input we'll work with. However we run into a different limitation: integrating with the outside world is complex, and that complexity is counter to the focus on essentials that we want in a case study. So, for now we are going to use a single constructor that converts an `Iterator` to a `Stream`. We're choosing `Iterator` because it has internal state, and so will illustrate some of the issues the come with interacting with a stateful world.
 
 Here's the final interface:
 
