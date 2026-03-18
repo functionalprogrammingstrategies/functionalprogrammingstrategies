@@ -13,7 +13,7 @@ If we're not creating data structures, we should consider their dual, programs. 
 
 We have enough principles to get started. Let's now turn to the basic strategies introduced in @sec:part:foundations:
 
-- data (@sec:data) and codata (@sec:codata);
+- data (@sec:adt) and codata (@sec:codata);
 - interpreters (@sec:interpreters); and
 - contextual abstraction (@sec:type-classes).
 
