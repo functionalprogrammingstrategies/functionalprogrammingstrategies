@@ -80,7 +80,7 @@ trait Stream[A]:
   def foldLeft[B](zero: B)(f: (B, A) => B): B
 ```
 
-We now need some introduction forms, or constructors as they are more often known. This gets interesting because it's here that we connect our `Stream` to the outside world: the network sockets and keyboard events that produce the raw input we'll work with. However we run into a different limitation: integrating with the outside world is complex, and that complexity is counter to the focus on essentials that we want in a case study. So, for now we are going to use a single constructor that converts an `Iterator` to a `Stream`. We're choosing `Iterator` because it has internal state, and so will illustrate some of the issues the come with interacting with a stateful world.
+We now need some introduction forms, or constructors as they are more often known. This gets interesting because it's here that we connect our `Stream` to the outside world: the network sockets and keyboard events that produce the raw input we'll work with. However we run into a different limitation: integrating with the outside world is complex, and that complexity is counter to the focus on essentials that we want in a case study. So, for now we are going to use a single constructor that converts an `Iterator` to a `Stream`. We're choosing `Iterator` because it has internal state, and so will illustrate some of the issues that come with interacting with a stateful world.
 
 Here's the final interface:
 

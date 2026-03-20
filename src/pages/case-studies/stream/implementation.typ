@@ -108,7 +108,7 @@ object Stream:
     Stream.FromIterator(it)
 ```
 
-    If haven't checked if the `Iterator` has any elements. This method's result type doesn't reflect that it can fail. If it returned, say, an `Option` then this would be obvious, and our programming strategies would lead us to the correct solution. This isn't done because an `Option` requires memory allocation, and this is an interface that is deemed to need optimization. However, it does show us the downside of imperative programming, and the illustrate how we can easily avoid these problems at the cost of some performance. Here's the corrected code.
+We haven't checked if the `Iterator` has any elements. This method's result type doesn't reflect that it can fail. If it returned, say, an `Option` then this would be obvious, and our programming strategies would lead us to the correct solution. This isn't done because an `Option` requires memory allocation, and this is an interface that is deemed to need optimization. However, it does show us the downside of imperative programming, and illustrate how we can easily avoid these problems at the cost of some performance. Here's the corrected code.
 
 ```scala mdoc:silent:reset
 import cats.syntax.all.*
