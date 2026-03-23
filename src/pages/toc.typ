@@ -130,6 +130,7 @@
 #include  "case-studies/stream/design.typ"
 #include  "case-studies/stream/implementation.typ"
 #include  "case-studies/stream/state.typ"
+#include  "case-studies/stream/pull.typ"
 #include  "case-studies/testing/index.typ"
 #include  "case-studies/error-handling/index.typ"
 #include  "case-studies/map-reduce/index.typ"
