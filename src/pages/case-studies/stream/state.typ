@@ -94,7 +94,7 @@ Seq(Some(1), Some(1), Some(1))
 
 as each call to `next` is a new invocation of the interpreter. The actual output we saw is incorrect, because the state carries across multiple runs of the interpreter. Another implication is that we probably should not expose `next` to the user. It never really makes sense to run the `Stream` only once, and the semantics are confusing.
 
-We still have the fundamental problem: how exactly are we going to create state that only lives in the interpreter? In a tree walking interpreter, my favourite way to handle this is to compile the program into a stateful abstract syntax tree. The state is nicely isolated where it's needed and interpretation is still a simple structural recursion. We'll also take this opportunity to remove `next` from the public interface. As we noted earlier, the semantics are confusing. The code is below.
+We still have the fundamental problem: how exactly are we going to create state that only lives in the interpreter? In a tree walking interpreter, my favourite way to handle this is to compile the program into a stateful abstract syntax tree. The state is nicely isolated where it's needed and interpretation is still a simple structural recursion. We'll also take this opportunity to make a few improvements: removing `next`, and its confusing semantics, from the public interface, and adding a method `toSeq` which is useful for testing. The code is below.
 
 ```scala mdoc:silent:reset
 import cats.syntax.all.*
@@ -134,6 +134,9 @@ enum Stream[A]:
         case None => zero
 
     loop(zero)
+
+  def toSeq: Seq[A] =
+    foldLeft(Seq.empty)(_ :+ _)
 
 object Stream:
   enum Compiled[A]:
@@ -175,9 +178,9 @@ val s = Stream.fromSeq(Seq(1, 2, 3))
 we get the correct result when we run it multiple times:
 
 ```scala mdoc
-s.foldLeft(Seq.empty)(_ :+ _)
+s.toSeq
 
-s.foldLeft(Seq.empty)(_ :+ _)
+s.toSeq
 ```
 
 #exercise[Stream `take`]
@@ -197,8 +200,8 @@ Implement this.
     We can follow the same implementation pattern to easily add `take`. Here's my implementation.
     
 ```scala mdoc:silent:reset
-
 import cats.syntax.all.*    
+
 enum Stream[A]:
   case Map[A, B](source: Stream[A], f: A => B) extends Stream[B]
   case Product[A, B](left: Stream[A],  right: Stream[B]) extends Stream[(A, B)]
@@ -244,6 +247,9 @@ enum Stream[A]:
 
     loop(zero)
 
+  def toSeq: Seq[A] =
+    foldLeft(Seq.empty)(_ :+ _)
+
 object Stream:
   enum Compiled[A]:
     case Map[A, B](source: Compiled[A], f: A => B) extends Compiled[B]
@@ -273,6 +279,135 @@ object Stream:
     We should test our code works.
 
 ```scala mdoc
-Stream.fromSeq(Seq(1, 2, 3)).take(2).foldLeft(Seq.empty)(_ :+ _)
+Stream.fromSeq(Seq(1, 2, 3)).take(2).toSeq
+```
+]
+
+#exercise[Stream `merge`]
+
+With `product` we've implemented one way to join together two `Streams`.
+In this exercise we'll implement another way to accomplish this.
+Our method will have the signature
+
+```scala
+def merge(that: Stream[A]): Stream[A]
+```
+
+It joins together two `Streams` by pulling a single element from the left and then from the right until either `Stream` runs out of elements.
+For example,
+
+```scala
+Stream.fromSeq(Seq(1, 2, 3))
+  .merge(Stream.fromSeq(Seq(4, 5, 6)))
+```
+
+should produce `1`, `4`, `2`, `5`, `3`, `6` in order. This require state, as we must remember which `Stream` to pull from next.
+
+Implement `merge`.
+
+#solution[
+    This follows the same pattern as before.
+    
+```scala mdoc:silent:reset
+
+import cats.syntax.all.*    
+enum Stream[A]:
+  case Map[A, B](source: Stream[A], f: A => B) extends Stream[B]
+  case Merge(left: Stream[A], right: Stream[A])
+  case Product[A, B](left: Stream[A],  right: Stream[B]) extends Stream[(A, B)]
+  case Take(source: Stream[A], count: Int)
+  case FromIterator(it: Iterator[A])
+  case FromSeq(seq: Seq[A])
+
+  def map[B](f: A => B): Stream[B] =
+    Map(this, f)
+
+  def merge(that: Stream[A]): Stream[A] =
+    Merge(this, that)
+
+  def product[B](that: Stream[B]) =
+    Product(this, that)
+
+  def take(count: Int): Stream[A] =
+    Take(this, count)
+
+  def foldLeft[B](zero: B)(f: (B, A) => B): B =
+    import Stream.Compiled
+    import Stream.MergeDirection
+
+    val compiled = Stream.Compiled.fromStream(this)
+
+    def next[C](compiled: Compiled[C]): Option[C] =
+      compiled match
+        case Compiled.Map(source, f) => next(source).map(f)
+        case c @ Compiled.Merge(left, right, direction) =>
+          direction match
+            case MergeDirection.Left =>
+              c.direction = MergeDirection.Right
+              next(left)
+            case MergeDirection.Right =>
+              c.direction = MergeDirection.Left
+              next(right)
+        case Compiled.Product(left, right) => (next(left), next(right)).tupled
+        case c @ Compiled.Take(source, count) =>
+          if count == 0 then None
+          else
+            c.count = count - 1
+            next(source)
+        case Compiled.FromIterator(it) => if it.hasNext then Some(it.next) else None
+        case c @ Compiled.FromSeq(seq, idx) =>
+          if idx == seq.size then None
+          else
+            val elt = seq(idx)
+            c.idx = idx + 1
+            Some(elt)
+
+    def loop(zero: B): B =
+      next(compiled) match
+        case Some(v) => loop(f(zero, v))
+        case None => zero
+
+    loop(zero)
+
+  def toSeq: Seq[A] =
+    foldLeft(Seq.empty)(_ :+ _)
+
+object Stream:
+  enum MergeDirection:
+    case Left
+    case Right
+
+  enum Compiled[A]:
+    case Map[A, B](source: Compiled[A], f: A => B) extends Compiled[B]
+    case Merge(left: Compiled[A], right: Compiled[A], var direction: MergeDirection)
+    case Product[A, B](left: Compiled[A],  right: Compiled[B]) extends Compiled[(A, B)]
+    case Take(source: Compiled[A], var count: Int)
+    case FromIterator(it: Iterator[A])
+    case FromSeq(seq: Seq[A], var idx: Int = 0)
+
+  object Compiled:
+    import Compiled.*
+
+    def fromStream[A](stream: Stream[A]): Compiled[A] =
+      stream match
+        case Stream.Map(source, f) => Map(fromStream(source), f)
+        case Stream.Merge(left, right) => Merge(fromStream(left), fromStream(right), MergeDirection.Left)
+        case Stream.Product(left, right) => Product(fromStream(left), fromStream(right))
+        case Stream.Take(source, count) => Take(fromStream(source), count)
+        case Stream.FromIterator(it) => FromIterator(it)
+        case Stream.FromSeq(seq) => FromSeq(seq)
+
+  def fromIterator[A](it: Iterator[A]): Stream[A] =
+    Stream.FromIterator(it)
+
+  def fromSeq[A](seq: Seq[A]): Stream[A] =
+    Stream.FromSeq(seq)
+```
+
+    
+```scala mdoc
+Stream.fromSeq(Seq(1, 2, 3))
+  .merge(Stream.fromSeq(Seq(4, 5, 6)))
+  .toSeq
 ```
 ]
