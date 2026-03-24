@@ -309,8 +309,8 @@ Implement `merge`.
     This follows the same pattern as before.
     
 ```scala mdoc:silent:reset
-
 import cats.syntax.all.*    
+
 enum Stream[A]:
   case Map[A, B](source: Stream[A], f: A => B) extends Stream[B]
   case Merge(left: Stream[A], right: Stream[A])
