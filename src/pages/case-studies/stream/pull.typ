@@ -3,7 +3,6 @@
 
 In the last section we saw the importance of clear thinking about semantics,
 as our muddy thinking led us to mistakes in the design of the interpreter and the API we exposed to the user.
-It's time to be more precise about the semantics of `Stream`.
 
 To be able to talk precisely about semantics,
 we need to introduce some terminology.
@@ -76,16 +75,9 @@ as `merge` will be stuck forever in the left-hand side.
 
 The underlying problem is that we've allowed `filter` to turn a single pull from the downstream
 into an unbounded number of pulls from the upstream.
-Simple and predictable semantics mean we shouldn't multiply pulls unless the user explicitly requests it.
-To reach this conclusion we had to have the concept of demand, upstreams, and downstreams.
-In many problems developing this kind of semantic model is the most important step,
-and here that the domain-specific knowledge is found.
-Once we have the model, the programming strategies help us translate it to code.
-
-Back to the code, how should we fix `filter`?
-At the moment the result of a pull, a call to `next`, is either a value or the end of the stream.
-We need to be able to signal that a pull didn't produce data, but a later pull may.
-This suggests that `next` should produce an algebraic data type like
+Our semantics will be simpler if we require a single pull from the downstream results in a single pull to the upstream.
+Making this change requires that a pull can produce one of three outcomes: a value, the end of the stream, or a signal that no value is available now but may be available later.
+Concretely, this means that `next` should produce an algebraic data type like
 
 ```scala mdoc:silent
 enum Emit[+A]:
@@ -104,7 +96,7 @@ Refactor the implementation of `Stream` so that `next` returns the `Emit` algebr
 and change `filter` to produce a `Wait` value when the result of an upstream pull is not a value that passes the predicate.
 
 #solution[
-    This requires a lot of changes to the code. Most of the changes are quite straightforward, but `product` becomes substantially more complex now we have to account for one side producing a value while the otherside is still waiting. I felt the code was getting a bit messy, so refactored my implementation to define the `next` method directly on `Compiled`.
+    This requires a lot of changes to the code. Most of the changes are quite straightforward, but `product` becomes substantially more complex now we have to account for one side producing a value while the otherside is still waiting. I felt the code was getting a bit messy, so refactored my implementation to define the `next` method within the `Compiled` type. In production code I'd probably rewrite the `Compiled` type into object-oriented style, to encapsulate the state, and make sure it was only visible within the package that includes it and `Stream`.
 
 ```scala mdoc:silent:reset
 import cats.syntax.all.*
@@ -330,3 +322,10 @@ Stream.fromIterator(Iterator.continually(1))
   .toSeq
 ```
 ]
+
+This section and the previous one have shown the importance of precisely defining semantics.
+Precise definitions in turn require terminology.
+To talk about `Stream` semantics we introduced the concepts of demand, upstreams, and downstreams.
+In many problems developing this kind of semantic model is the most important step,
+and here that the domain-specific knowledge is found.
+Once we have the model, the programming strategies help us translate it to code.
