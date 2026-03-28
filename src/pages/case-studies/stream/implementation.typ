@@ -46,7 +46,7 @@ object Stream:
 
 Our next step is to implement the interpreter, `foldLeft`.
 
-#exercise[Basic Interpreter]
+#exercise[The Basic Interpreter]
 
 Try implementing the interpreter. For this we can use structural recursion, introduced in @sec:adt:structural.
 
@@ -64,12 +64,17 @@ def next(): Option[A]
 
 where the result is an `Option` because there may not be any more elements available.
 
-Before we implement this, let's think about how we could have foreseen the need for this method.
+Before we implement this, let's think about why `foldLeft` didn't work for us.
+Although it is true that folds are universal destructors, accessing that full expressivity can require contortions like programming in continuation-passing style.
+When we implemented the codata `Stream` in @sec:codata-structural, we said that streams were defined by `head` and `tail` destructors.
+This doesn't tie us to any particular control flow like a fold does.
+Similarly, `next` is the minimal destructor for the reactive version of `Stream` on which we can build `foldLeft`.
+If we think about it, a fold is essentially minimal destructors plus control flow.
 When we discussed `foldLeft` we hinted that there could be some issues with it.
 Now we know exactly what problem it brings.
 
 
-#exercise[Better Interpreter]
+#exercise[A Better Interpreter]
 
 Implement `next` and then implement `foldLeft` using it.
 
@@ -108,7 +113,7 @@ object Stream:
     Stream.FromIterator(it)
 ```
 
-We haven't checked if the `Iterator` has any elements. This method's result type doesn't reflect that it can fail. If it returned, say, an `Option` then this would be obvious, and our programming strategies would lead us to the correct solution. This isn't done because an `Option` requires memory allocation, and this is an interface that is deemed to need optimization. However, it does show us the downside of imperative programming, and illustrate how we can easily avoid these problems at the cost of some performance. Here's the corrected code.
+I haven't checked if the `Iterator` has any elements. The result type of `next` on an `Iterator` doesn't reflect that it can fail. If it returned, say, an `Option` then this would be obvious, and our programming strategies would lead us to the correct solution. This isn't done because `Option` requires memory allocation, and `Iterator` is an interface that is deemed to need optimization. However, it does show us the downside of imperative programming, and illustrate how we can easily avoid these problems at the cost of some performance. Here's the corrected code.
 
 ```scala mdoc:silent:reset
 import cats.syntax.all.*

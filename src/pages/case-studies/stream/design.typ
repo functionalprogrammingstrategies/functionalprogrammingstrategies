@@ -1,11 +1,13 @@
 == Designing with Strategies
 
 In this section we'll take a first principles approaches to design, systematically applying strategies to create the initial interface we'll implement.
-Before doing so, however, I want to mention another strategy that is extremely powerful but often neglected: *prior work*.
+Before doing so, however, I want to mention another strategy that is extremely powerful but often neglected: utiliziing *prior work*.
+
 It's very rare to undertake a truly novel problem.
 Researching prior work provides a shortcut both to design and implementation, and can help us avoid many problems.
-It is always my first approach, but we won't use it here as we're trying to illustrate the application of the other strategies.
-
+This is the reason that most chapters end with a short survey of relevant literature:
+I want to show that the ideas in this book build on existing work, and help you dive into the literature if this is not something you're accustomed to doing.
+Researching prior work is always my first approach to any design problem, though we won't use it here as we're trying to illustrate the application of the other strategies.
 
 Let's start with some fundamental principles that will guide our design. The core of reactive programming is to react to data as it becomes available. This means we're not creating a kind of data structure, because that implies accumulating data in memory. The user may choose to hold on to past data, but we shouldn't mandate that memory usage grows with the amount of data processed. This is particularly important because in many situations the data is effectively unbounded. For example, a user interface can easily receive millions of mouse events in a single session.
 
@@ -17,9 +19,9 @@ We have enough principles to get started. Let's now turn to the basic strategies
 - interpreters (@sec:interpreters); and
 - contextual abstraction (@sec:type-classes).
 
-How can we apply them to reactive programming? Let's start from the top. We've already decided we're building a DSL for programs, not a data structure, and therefore we should use codata. We could arrive at the same conclusion by considering we want to work with unbounded streams of data. To make the following discussion clearer, let's give the name `Stream` the type we're creating. Don't confuse this with the type of the same name we saw in @sec:codata-structural. They are related but ultimately different.
+How can we apply them to reactive programming? Let's start from the top. We've already decided we're building a DSL for programs, not a data structure, and this suggests we should use codata. We could arrive at the same conclusion by considering we want to work with unbounded streams of data. To make the following discussion clearer, let's give the name `Stream` the type we're creating. Don't confuse this with the type of the same name we saw in @sec:codata-structural. They are related but ultimately different.
 
-Our next strategy is the interpreter. Is this appropriate for our reactive `Stream`? Yes, that is one of the principles we decided upon. We can also consider this decision from a different angle. An interpreter means a separation between description and action, which in this context means we describe the structure of the stream processing graph before we run it. This seems like a good thing in our situation: it means the graph is fully constructed before it starts running, and therefore won't lose data because the graph isn't complete when the first data arrives.
+Our next strategy is the interpreter. Is this appropriate for our reactive `Stream`? Yes, if a `Stream` is a program then it must have an interpreter. We can also consider this decision from a different angle. An interpreter means a separation between description and action, which in this context means we describe the structure of the stream processing graph before we run it. This seems like a good thing: it means the graph is fully constructed before it starts running, and therefore won't lose data because the graph isn't complete when the first data arrives.
 
 The implication of using the interpreter strategy is we need to think about the elements of our algebra: the introduction forms, combinators, and elimination forms. We'll make a mental note to come back to this and move on to the next strategy.
 
@@ -63,7 +65,7 @@ We've made progress on our combinators. Let's switch to elimination forms. Remem
 One way to come up with an interface is to leverage duality.
 We earlier said that our `Stream` is a type of program, dual to data.
 What exactly would the dual be?
-If we think of a `Stream` as representing data ordered by time, then we might ask what is data ordered by space?#footnote[
+If we think of a `Stream` as a program working on data ordered by time, then we might ask what is data ordered by space?#footnote[
     If we like, we can connect this to special relativity, which says we can mix space and time.
     It's not a true duality, as I understand it, but a relationship that feels very close to one.
 ]
@@ -102,4 +104,4 @@ In a case study we can take a straight path from problem to solution.
 In this section we've done just that.
 In a real system the path will involve many more dead ends.
 I find the design strategies a useful scaffold for thinking,
-even if I cannot so immediately see how to apply them as shown here.
+even if I cannot as immediately see how to apply them as shown here.

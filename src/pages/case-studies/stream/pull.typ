@@ -9,10 +9,10 @@ we need to introduce some terminology.
 Let's start with *source* and *sink*.
 Data orginates from a source, such as `fromIterator` or `fromSeq`, and finishes at a sink.
 We can have multiple sources, but in our design there is only one sink.
-The sink is downstream of the sources and any other intermediate nodes.
-Similarly, the sources are upstream of the sink and any other intermediate nodes.
+The sink is *downstream* of the sources and any other intermediate nodes.
+Similarly, the sources are *upstream* of the sink and any other intermediate nodes.
 
-Data only flows in response to demand.
+Data only flows in response to *demand*.
 In our system, calls to `next` indicate demand for data.
 Hence demand flows upstream while data flows downstream.
 This is known as a *pull-based* approach, as the demand "pulls" data from the upstream nodes.
@@ -34,6 +34,7 @@ Have a go at implementing this yourself before reading on.
 At this point the implementation technique should be fairly straightforward.
 The `Stream` code is getting fairly lengthy, and its only the interpreter loop that is important,
 so I'll only include the interpreter code here.
+
 You probably wrote something like
 
 ```scala
@@ -75,7 +76,7 @@ as `merge` will be stuck forever in the left-hand side.
 
 The underlying problem is that we've allowed `filter` to turn a single pull from the downstream
 into an unbounded number of pulls from the upstream.
-Our semantics will be simpler if we require a single pull from the downstream results in a single pull to the upstream.
+This suggests a principle we should maintain: a single pull from the downstream results in a single pull to the upstream.
 Making this change requires that a pull can produce one of three outcomes: a value, the end of the stream, or a signal that no value is available now but may be available later.
 Concretely, this means that `next` should produce an algebraic data type like
 
@@ -96,7 +97,7 @@ Refactor the implementation of `Stream` so that `next` returns the `Emit` algebr
 and change `filter` to produce a `Wait` value when the result of an upstream pull is not a value that passes the predicate.
 
 #solution[
-    This requires a lot of changes to the code. Most of the changes are quite straightforward, but `product` becomes substantially more complex now we have to account for one side producing a value while the otherside is still waiting. I felt the code was getting a bit messy, so refactored my implementation to define the `next` method within the `Compiled` type. In production code I'd probably rewrite the `Compiled` type into object-oriented style, to encapsulate the state, and make sure it was only visible within the package that includes it and `Stream`.
+    This requires a lot of changes to the code. Most of the changes are quite straightforward, but `product` becomes substantially more complex now we have to account for one side producing a value while the otherside is still waiting. I felt the code was getting a bit messy, so refactored my implementation to define the `next` method within the `Compiled` type. In production code I'd probably rewrite the `Compiled` type into object-oriented style, to encapsulate the state, and also make sure it was only visible within the package that includes it and `Stream`.
 
 ```scala mdoc:silent:reset
 import cats.syntax.all.*
@@ -325,7 +326,7 @@ Stream.fromIterator(Iterator.continually(1))
 
 This section and the previous one have shown the importance of precisely defining semantics.
 Precise definitions in turn require terminology.
-To talk about `Stream` semantics we introduced the concepts of demand, upstreams, and downstreams.
+To talk about `Stream` semantics we introduced the concepts of demand or pulls, upstreams, and downstreams.
 In many problems developing this kind of semantic model is the most important step,
 and here that the domain-specific knowledge is found.
 Once we have the model, the programming strategies help us translate it to code.

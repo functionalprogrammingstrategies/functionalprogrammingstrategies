@@ -3,14 +3,14 @@
 
 Our next feature will be a constructor to create a `Stream` from a `Seq`. This will get us to think more deeply about semantics and show how we can handle state within an interpreter.
 
-This feature seems quite simple. We want a constructor
+This feature seems quite simple. All we want is a constructor
 
 ```scala
 def fromSeq[A](seq: Seq[A]): Stream[A]
 ```
 
 
-#exercise[Sequence Constructor]
+#exercise[The `Seq` Constructor]
 
 Implement the `fromSeq` constructor.
 
@@ -55,7 +55,7 @@ object Stream:
 ```
 ]
 
-Handling state by converting the `Seq` to an `Iterator` seems like a reasonable approach. If we define a stream like
+Handling state by converting the `Seq` to an `Iterator` seems like a reasonable approach. If `fromSeq` turns into a call to `fromIterator`, and we define a stream like
 
 ```scala mdoc:silent
 val s = Stream.fromSeq(Seq(1, 2, 3))
@@ -167,7 +167,7 @@ This is one of the longer code examples we've seen, but the changes are reasonab
 - We introduce a `FromSeq` case to `Stream`.
 - We define a new algebraic data type, `Compiled`, to represent the target we compile `Stream` into. This structure mirrors `Stream` exactly, except `FromSeq` has a mutable index.
 - Compilation is a straightforward structural recursion, defined in `fromStream`.
-- We hide `next` within `foldLeft`, and rework `foldLeft` to work on a compiled version of the `Stream`. As the stateful compiled `Stream` is only visible within `foldLeft`, none of the state can escape beyond the call to `foldLeft`.
+- We hide `next` within `foldLeft`, and rework `foldLeft` to work on a compiled version of the `Stream`. As the stateful `Compiled` is only visible within `foldLeft`, none of the state can escape beyond the call to `foldLeft`.
 
 If we define a `Stream` containing a `Seq`
 
@@ -193,7 +193,7 @@ We can provide this functionality with the `take` combinator:
 def take(count: Int): Stream[A]
 ```
 
-This passes on the first `count` elements it sees, and then closes the `Stream`.
+This forwards on the first `count` elements it sees, and then closes the `Stream`.
 Implement this.
 
 #solution[
@@ -299,6 +299,7 @@ For example,
 ```scala
 Stream.fromSeq(Seq(1, 2, 3))
   .merge(Stream.fromSeq(Seq(4, 5, 6)))
+  .toSeq
 ```
 
 should produce `1`, `4`, `2`, `5`, `3`, `6` in order. This require state, as we must remember which `Stream` to pull from next.
