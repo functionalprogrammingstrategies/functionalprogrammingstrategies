@@ -115,6 +115,10 @@
 #include  "di/interpreters.typ"
 #include  "di/effects.typ"
 #include  "di/conclusions.typ"
+// Capability-passing
+#include  "cap/index.typ"
+#include  "cap/capabilities.typ"
+#include  "cap/conclusions.typ"
 // Interpreter optimization
 #include  "adt-optimization/index.typ"
 #include  "adt-optimization/algebra.typ"

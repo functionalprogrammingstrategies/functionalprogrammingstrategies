@@ -1,5 +1,6 @@
 #import "../stdlib.typ": info, warning, solution, href, exercise
 == Tail Recursive Interpreters
+<sec:interpreters:tail>
 
 Structural recursion, as we have written it, uses the stack. This is not often a problem, but particularly deep recursions can lead to the stack running out of space. A solution is to write a *tail recursive* program. A tail recursive program does not need to use any stack space, and so is sometimes known as *stack safe*. Any program can be turned into a tail recursive version, which does not use the stack and therefore cannot run out of stack space.
 

@@ -1,5 +1,5 @@
 #import "../stdlib.typ": info, warning, solution
-== Algebraic User Interfaces
+== Algebraic User Interfaces <sec:tagless-final:aui>
 
 
 Changing the interpretation of our terminal programs is more a theoretical than a practical problem. While it is true that different interpretations, such as saving to a text buffer, or tracing the state changes, will have niche uses, the vast majority of the time we'll use the default interpretation. A much more motivating example is a cross-platform user interface library. Frameworks such as #link("https://flutter.dev/")[Flutter], #link("https://reactnative.dev/")[React Native], and #link("https://capacitorjs.com/")[Capacitor] derive a lot of their value by allowing programmers to define a single interface that works across web and mobile. We will build such a library here, but our ambitions are a bit reduced: we will create a terminal backend but leave other backends up to your inspiration and perspiration.
