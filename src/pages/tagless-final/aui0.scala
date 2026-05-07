@@ -9,24 +9,28 @@ type Validation[A] = A => Either[String, A]
 // The validation rule that always succeeds
 def succeed[A](value: A): Either[String, A] = Right(value)
 
-trait Controls[Ui[_]] {
+trait Controls[Ui[_]]:
   def textInput(
       label: String,
       placeholder: String,
       validation: Validation[String] = succeed
   ): Ui[String]
 
-  def choice[A](label: String, options: Seq[(String, A)]): Ui[A]
-}
+  def choice[A](
+      label: String,
+      options: Seq[(String, A)]
+  ): Ui[A]
 
-trait Layout[Ui[_]] {
+trait Layout[Ui[_]]:
   def and[A, B](first: Ui[A], second: Ui[B]): Ui[(A, B)]
-}
 
 type Program[A] = () => A
 
-object Simple extends Controls[Program], Layout[Program] {
-  def and[A, B](first: Program[A], second: Program[B]): Program[(A, B)] =
+object Simple extends Controls[Program], Layout[Program]:
+  def and[A, B](
+      first: Program[A],
+      second: Program[B]
+  ): Program[(A, B)] =
     (first, second).tupled
 
   def textInput(
@@ -34,51 +38,49 @@ object Simple extends Controls[Program], Layout[Program] {
       placeholder: String,
       validation: Validation[String] = succeed
   ): Program[String] =
-    () => {
-      def loop(): String = {
+    () =>
+      def loop(): String =
         println(s"$label (e.g. $placeholder):")
         val input = StdIn.readLine
 
         validation(input).fold(
-          msg => {
+          msg =>
             println(msg)
             loop()
-          },
+          ,
           value => value
         )
-      }
 
       loop()
-    }
 
-  def choice[A](label: String, options: Seq[(String, A)]): Program[A] =
-    () => {
-      def loop(): A = {
+  def choice[A](
+      label: String,
+      options: Seq[(String, A)]
+  ): Program[A] =
+    () =>
+      def loop(): A =
         println(label)
-        options.zipWithIndex.foreach { case ((desc, _), idx) =>
-          println(s"$idx: $desc")
+        options.zipWithIndex.foreach {
+          case ((desc, _), idx) =>
+            println(s"$idx: $desc")
         }
 
         Try(StdIn.readInt).fold(
-          _ => {
+          _ =>
             println("Please enter a valid number.")
             loop()
-          },
-          idx => {
-            if idx >= 0 && idx < options.size then options(idx)(1)
-            else {
+          ,
+          idx =>
+            if idx >= 0 && idx < options.size then
+              options(idx)(1)
+            else
               println("Please enter a valid number.")
               loop()
-            }
-          }
         )
-      }
 
       loop()
-    }
-}
 
-@main def example(): Unit = {
+@main def example(): Unit =
   def bio[Ui[_]](
       controls: Controls[Ui],
       layout: Layout[Ui]
@@ -112,4 +114,3 @@ object Simple extends Controls[Program], Layout[Program] {
   val (name, rating) = quiz(Simple, Simple)()
   println(s"Hello $name!")
   println(s"You gave tagless final a rating of $rating.")
-}

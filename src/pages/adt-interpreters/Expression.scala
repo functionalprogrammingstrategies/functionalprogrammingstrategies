@@ -1,4 +1,4 @@
-enum Expression {
+enum Expression:
   case Literal(value: Double)
   case Addition(left: Expression, right: Expression)
   case Subtraction(left: Expression, right: Expression)
@@ -17,21 +17,26 @@ enum Expression {
   def /(that: Expression): Expression =
     Division(this, that)
 
-  def simplify: Expression = {
-    def loop(expr: Expression): Expression = {
+  def simplify: Expression =
+    def loop(expr: Expression): Expression =
       val result =
-        expr match {
+        expr match
           // Addition of identity
           case Addition(Literal(0.0), expr) => expr.simplify
           case Addition(expr, Literal(0.0)) => expr.simplify
           // Multiplication of identity
-          case Multiplication(Literal(1.0), expr) => expr.simplify
-          case Multiplication(expr, Literal(1.0)) => expr.simplify
+          case Multiplication(Literal(1.0), expr) =>
+            expr.simplify
+          case Multiplication(expr, Literal(1.0)) =>
+            expr.simplify
           // Multiplication by absorbing element
-          case Multiplication(Literal(0.0), expr) => Literal(0.0)
-          case Multiplication(expr, Literal(0.0)) => Literal(0.0)
+          case Multiplication(Literal(0.0), expr) =>
+            Literal(0.0)
+          case Multiplication(expr, Literal(0.0)) =>
+            Literal(0.0)
           // Subtraction of identity
-          case Subtraction(expr, Literal(0.0)) => expr.simplify
+          case Subtraction(expr, Literal(0.0)) =>
+            expr.simplify
           // Division of identity
           case Division(expr, Literal(1.0)) => expr.simplify
           // Cases with no special treatment
@@ -45,31 +50,30 @@ enum Expression {
             Multiplication(left.simplify, right.simplify)
           case Division(left, right) =>
             Division(left.simplify, right.simplify)
-        }
 
       if result == expr then result else loop(result)
-    }
 
     loop(this)
-  }
 
   def eval: Double =
-    this match {
-      case Literal(value)              => value
-      case Addition(left, right)       => left.eval + right.eval
-      case Subtraction(left, right)    => left.eval - right.eval
-      case Multiplication(left, right) => left.eval * right.eval
-      case Division(left, right)       => left.eval / right.eval
-    }
+    this match
+      case Literal(value)        => value
+      case Addition(left, right) => left.eval + right.eval
+      case Subtraction(left, right) =>
+        left.eval - right.eval
+      case Multiplication(left, right) =>
+        left.eval * right.eval
+      case Division(left, right) => left.eval / right.eval
 
-  def print: String = {
-    val builder = new scala.collection.mutable.StringBuilder()
+  def print: String =
+    val builder =
+      new scala.collection.mutable.StringBuilder()
 
     def withBinOp(
         left: Expression,
         op: Char,
         right: Expression
-    ): StringBuilder = {
+    ): StringBuilder =
       builder.addOne('(')
       loop(left)
       builder.addOne(' ')
@@ -77,11 +81,11 @@ enum Expression {
       builder.addOne(' ')
       loop(right)
       builder.addOne(')')
-    }
 
     def loop(expr: Expression): StringBuilder =
-      expr match {
-        case Literal(value) => builder.append(value.toString)
+      expr match
+        case Literal(value) =>
+          builder.append(value.toString)
         case Addition(left, right) =>
           withBinOp(left, '+', right)
         case Subtraction(left, right) =>
@@ -90,13 +94,9 @@ enum Expression {
           withBinOp(left, '*', right)
         case Division(left, right) =>
           withBinOp(left, '/', right)
-      }
 
     loop(this)
     builder.toString
-  }
-}
-object Expression {
+object Expression:
   def apply(value: Double): Expression =
     Literal(value)
-}

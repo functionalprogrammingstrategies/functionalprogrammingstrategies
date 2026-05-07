@@ -1,17 +1,20 @@
-object ArithmeticCps {
+object ArithmeticCps:
   type Continuation = Double => Double
 
-  enum Expression {
+  enum Expression:
     case Literal(value: Double)
     case Addition(left: Expression, right: Expression)
     case Subtraction(left: Expression, right: Expression)
     case Multiplication(left: Expression, right: Expression)
     case Division(left: Expression, right: Expression)
 
-    def eval: Double = {
-      def loop(expr: Expression, cont: Continuation): Double =
-        expr match {
-          case Literal(value) => cont(value)
+    def eval: Double =
+      def loop(
+          expr: Expression,
+          cont: Continuation
+      ): Double =
+        expr match
+          case Literal(value)        => cont(value)
           case Addition(left, right) =>
             loop(left, l => loop(right, r => cont(l + r)))
           case Subtraction(left, right) =>
@@ -20,10 +23,8 @@ object ArithmeticCps {
             loop(left, l => loop(right, r => cont(l * r)))
           case Division(left, right) =>
             loop(left, l => loop(right, r => cont(l / r)))
-        }
 
       loop(this, identity)
-    }
 
     def +(that: Expression): Expression =
       Addition(this, that)
@@ -36,9 +37,6 @@ object ArithmeticCps {
 
     def /(that: Expression): Expression =
       Division(this, that)
-  }
-  object Expression {
+  object Expression:
     def apply(value: Double): Expression =
       Literal(value)
-  }
-}

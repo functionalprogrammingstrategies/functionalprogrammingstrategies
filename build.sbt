@@ -54,15 +54,39 @@ val pagesDirectory = settingKey[File](
 )
 pagesDirectory := sourceDirectory.value / "pages"
 
-val pages = settingKey[Glob]("The source files for the book.")
+val pages =
+  settingKey[Glob]("The source files for the book.")
 pages := pagesDirectory.value.toGlob / ** / "*.typ"
+
+val tempDirectory = settingKey[File](
+  "The top of the directory tree into which md files are copied for formatting. Must be in the src directory so that scalafmt can find the files."
+)
+tempDirectory := (sourceDirectory.value / "main" / "scala" / "temp")
+
+val formatTypst = taskKey[Seq[File]](
+  "Format the typst files with scalafmt."
+)
+formatTypst := {
+  streams.value.log.info("Formatting typst files")
+  streams.value.log.info("Copying typst to temp directory")
+  copyWithNewExtension(
+    pages.value,
+    pagesDirectory.value,
+    tempDirectory.value,
+    "md"
+  )
+  streams.value.log.info("Running scalafmt")
+  scalafmtAll.value
+  Seq.empty
+}
 
 val mdDirectory = settingKey[File](
   "The top of the directory tree into which md files are generated."
 )
 mdDirectory := (baseDirectory.value / "target" / "md")
 
-val typstToMd = taskKey[Seq[File]]("Copy the typst files to md for mdoc.")
+val typstToMd =
+  taskKey[Seq[File]]("Copy the typst files to md for mdoc.")
 typstToMd := {
   streams.value.log.info("Copying typst files to md")
   copyWithNewExtension(
@@ -82,28 +106,44 @@ val typstDirectory = settingKey[File](
 )
 typstDirectory := baseDirectory.value / "target" / "pages"
 
-val mdToTypst = taskKey[Seq[File]]("Copy the mdoc processed md files to typst.")
+val mdToTypst = taskKey[Seq[File]](
+  "Copy the mdoc processed md files to typst."
+)
 mdToTypst := {
   streams.value.log.info("Copying md files to typst")
   val glob = mdocOut.value.toGlob / ** / "*.md"
-  copyWithNewExtension(glob, mdocOut.value, typstDirectory.value, "typ")
+  copyWithNewExtension(
+    glob,
+    mdocOut.value,
+    typstDirectory.value,
+    "typ"
+  )
 }
 
 val copyNonTypstFiles =
-  taskKey[Seq[File]]("Copy non-md files to the typst build.")
+  taskKey[Seq[File]](
+    "Copy non-md files to the typst build."
+  )
 copyNonTypstFiles := {
   streams.value.log.info("Copying non-md files to typst")
   val sources = FileTreeView.default
-    .list(pagesDirectory.value.toGlob / ** / "*.{svg,png,bib,csl}")
+    .list(
+      pagesDirectory.value.toGlob / ** / "*.{svg,png,bib,csl}"
+    )
     .collect { case (file, _) => file.toFile }
-    .pair(Path.rebase(pagesDirectory.value, typstDirectory.value))
+    .pair(
+      Path
+        .rebase(pagesDirectory.value, typstDirectory.value)
+    )
   IO.copy(sources).toSeq
 }
 
-val outputDirectory = settingKey[File]("Path where the built book goes.")
+val outputDirectory =
+  settingKey[File]("Path where the built book goes.")
 outputDirectory := baseDirectory.value / "dist"
 
-val makeOutputDirectory = taskKey[Unit]("Make the output directory")
+val makeOutputDirectory =
+  taskKey[Unit]("Make the output directory")
 makeOutputDirectory := {
   val dir = outputDirectory.value
   s"mkdir -p $dir".!
@@ -136,7 +176,9 @@ typst := {
 }
 
 val buildPdf =
-  taskKey[File]("Build the PDF, returning the path to the output.")
+  taskKey[File](
+    "Build the PDF, returning the path to the output."
+  )
 buildPdf / fileInputs += pages.value
 buildPdf := Def
   .sequential(
@@ -150,7 +192,9 @@ buildPdf := Def
   .value
 
 val build =
-  taskKey[File]("Build the book, returning the path to the output.")
+  taskKey[File](
+    "Build the book, returning the path to the output."
+  )
 build / fileInputs += pages.value
 build := Def
   .sequential(
