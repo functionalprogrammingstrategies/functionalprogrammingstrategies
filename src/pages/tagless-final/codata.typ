@@ -11,7 +11,9 @@ The terminal is familiar to most programmers, and terminal applications are comm
 === The Terminal
 
 
-The modern terminal is an accretion of features that started with the VT-100 in 1978 and continues [to this day][kitty-kp].
+The modern terminal is an accretion of features that started with the VT-100 in 1978 and continues to this day#footnote[
+    See, for example, the recent development of the #href("https://sw.kovidgoyal.net/kitty/keyboard-protocol/")[Kitty keyboard protocol].
+    ].
 Most terminal features are accessed by reading and writing ANSI escape codes, which are sequence of characters starting with the escape character.
 We will work only with escape codes that change the text style.
 This allows us to produce interesting output, and raises all the design issues we want to address, but keeps the system simple.
@@ -29,7 +31,7 @@ to
 
 (This is due to a limitation of the software that compiles the code in the book.)
 
-The examples should work with any terminal from the last 40 odd years.
+The examples should work with any terminal from the last 40 years or so.
 If you're on Windows you can use Windows Terminal, #href("https://learn.microsoft.com/en-us/windows/wsl/about")[WSL], or another terminal that runs on Windows such as #href("https://wezfurlong.org/wezterm/index.html")[WezTerm].
 
 
