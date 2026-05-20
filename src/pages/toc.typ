@@ -118,6 +118,8 @@
 // Capability-passing
 #include  "cap/index.typ"
 #include  "cap/capabilities.typ"
+#include  "cap/ui.typ"
+#include  "cap/ui-cap.typ"
 #include  "cap/conclusions.typ"
 // Interpreter optimization
 #include  "adt-optimization/index.typ"

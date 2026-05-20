@@ -13,29 +13,26 @@ but with a new framing to appreciate what we're doing.
 An effectful expression interacts with the surrounding environment in which it is evaluated.
 We call the interaction an effect, and the surrounding environment the context.
 Effects can be a dependency on or a modification of the context.
-For example, if we have a function `A => B` that also depends on some value `c` in scope,
-we say that `c` is part of the context and the way `c` is used is an effect.
-
-```scala
-val c: A = ???
-val f: A => B = a => makeB(a, c)
-```
-
-In the example above the effect may be completely benign,
-and not worth worrying about,
-or it could be a tricky concurrent operation that may produce errors.
-It all depends on what `makeB` does.
-One of the goals with effect handlers is to surface this information,
-so we can tell at a glance if calling a function is something to pay extra attention to.
-We're still being relatively informal in our discussion.
-If you want more formality please see the references in @sec:cap:conclusions.
+For example, an effect could be a modification of an in-memory key-value store,
+or it could be a dependency on a network connection to read packets.
+One of the goals of effect handlers is to surface the effects of a function,
+so we can tell at a glance if calling that function is something to pay extra attention to.
 
 
 === Capabilities
 
 A capability is something that provides the ability to carry out an effect.
 For example, in Scala we can think of an `ExecutionContext` as providing the capability to execute asynchronously.
-Capability-passing, then, is simply the idea that programs explicitly declare the capabilities they require,
+We can define context as the set of available capabilities along with the state of any resources that the capabilities control.
+
+What we choose to define as a capability is a design decision.
+It comes down to what we want to explicitly track and control access to.
+For example, in many cases we do not consider memory allocation to a be a capability,
+and code can freely allocate memory.
+However, in systems programming we usually want to track and restrict memory allocation,
+and therefore it would be considered a capability in this situation.
+
+Capability-passing is simply the idea that programs explicitly declare the capabilities they require,
 and we pass in those capabilities when we run them.
 There is a bit more complexity to make everything work nicely, but really the core idea is that simple.
 This is exactly what tagless final does, which we met in @sec:tagless-final.
@@ -46,6 +43,7 @@ Program[Controls & Layout, Tuple2[String, Int]]
 ```
 
 the first part of that type, `Controls & Layout`, is expressing exactly the capabilities the program requires to run.
+Therefore, we can view tagless final as an approach to capability-passing.
 Similarly, when we discussed dependency injection in @sec:di we saw that the core is simply passing dependencies to constructors or methods.
 We can view dependencies as capabilities, and so the essence of capability-passing is dependency injection (or vice versa, if you prefer.)
 
