@@ -1,6 +1,6 @@
 #import "../stdlib.typ": info, warning, solution, href
 == Codata Interpreters
-
+<sec:tagless-final:codata>
 
 In this section we'll explore codata interpreters, using a DSL for terminal interaction as a case study.
 The terminal is familiar to most programmers, and terminal applications are common for developer focused tools. Most terminal features are controlled by writing so-called escape codes to the terminal. However, applications benefit from higher-level abstractions, motivating textual user interface (TUI) libraries that present a more ergonomic interface#footnote[
