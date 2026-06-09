@@ -1,5 +1,25 @@
 == The Problems of User Interfaces
 
+
+The starting point of implementing a cpaability based library is determining the capabilities.
+We could do this by trial-and-error: by implementing a system, seeing what capabilities fall out, and refactoring.
+However, in this case we have a lot of prior work to we can use; there are many UI frameworks with a variety of different approaches. These frameworks are not necessarily explicitly using capabilities, but we can analyse them to see the core tasks they undertake, will inform the capabilities we need to provide.
+
+...exposition here...
+
+In summary, we have seen we can distinguish two different stages in a user interface: the setup stage where we construct the user interface, and the reactive stage where we respond to user actions. We have also identified the following capabilities:
+
+- layout, which is the ability to add components to the layout tree;
+- event registration, which is the ability to register interest in particular events; and
+- reaction, which is the ability to respond to events we registered an interest in.
+
+Not all capabilities are availabe in both stages. We cannot react to events in the setup stage. We're also going to disallow layout and event registration in the reactive stage. This means the user interface cannot dynamically add and remove components or event handlers. This serves both to simplify the implementation, which is useful in a case study context, and illustrate how we can use the type system to prevent errors.
+
+... diagram here ...
+
+We're going to create a framework for terminal user interfaces. We've already using the terminal in @sec:tagless-final:codata. Our usage here will be much more advanced, building full user interfaces. As result we'll require more infrastructure. This code isn't particularly relevant to capability-passing, so we'll just quickly sketch it here. See the full code in the code repository **link here** for details.
+
+
 User interfaces are difficult to create. This is in part because user interfaces have an enormous amount of detail; there's just a lot of stuff to write for a good user interface. That's not the problem we're considering here. Rather, we're concerned with the architecture. That is, the way in which the user interface author expresses the structure of the user interface, as mediated by the framework they use.
 
 Consider a user interface, similar to the Google home page, where the user enters text into an input and then presses a button.
