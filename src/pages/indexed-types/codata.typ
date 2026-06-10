@@ -1,5 +1,6 @@
 #import "../stdlib.typ": info, warning, solution
 == Indexed Codata
+<sec:indexed-types:codata>
 
 
 The basic idea of indexed codata is to prevent methods being called unless certain conditions, encoded in types, are met. More precisely, methods are guarded by type equalities that callers must prove they satisfy to call a method. The contextual abstraction features, `given` instances and `using` clauses, are used to implement this in Scala.

@@ -120,6 +120,9 @@
 #include  "cap/capabilities.typ"
 #include  "cap/ui.typ"
 #include  "cap/ui-cap.typ"
+#include  "cap/lessons.typ"
+#include  "cap/cc.typ"
+#include  "cap/cont.typ"
 #include  "cap/conclusions.typ"
 // Interpreter optimization
 #include  "adt-optimization/index.typ"

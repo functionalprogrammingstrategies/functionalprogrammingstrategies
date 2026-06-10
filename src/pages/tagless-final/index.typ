@@ -1,7 +1,6 @@
 #import "../stdlib.typ": info, warning, solution, chapter
 #chapter[Tagless Final Interpreters] <sec:tagless-final>
 
-
 In this chapter we'll explore the codata approach to interpreters, building up to a strategy known as *tagless final*.
 Along the way we will build two interpreters: one for terminal interaction and one for user interfaces.
 
