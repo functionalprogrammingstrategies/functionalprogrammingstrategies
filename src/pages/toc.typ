@@ -113,7 +113,6 @@
 #include  "di/providing.typ"
 #include  "di/bundling.typ"
 #include  "di/interpreters.typ"
-#include  "di/effects.typ"
 #include  "di/conclusions.typ"
 // Capability-passing
 #include  "cap/index.typ"
@@ -123,6 +122,7 @@
 #include  "cap/lessons.typ"
 #include  "cap/cc.typ"
 #include  "cap/cont.typ"
+#include  "cap/relation.typ"
 #include  "cap/conclusions.typ"
 // Interpreter optimization
 #include  "adt-optimization/index.typ"

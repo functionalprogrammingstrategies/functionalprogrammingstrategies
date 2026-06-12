@@ -4,17 +4,21 @@
 *Overview of chapter here.*
 
 This chapter has drawn together ideas from a number of fields: effect systems, object-capabilities, reactive systems, and user interfaces.
-As usual I'm going to give a brief overview of the work in these fields, aiming to sketch out the fields as I understand them rather than give a comprehensive overview.
+As usual I'm going to give a brief overview of the work in these fields, aiming to sketch out the connections as I understand them rather than give a comprehensive overview.
 
 #narrative-cite(<brachthäuser22:cps>) is a very readable introduction to the capability-passing approach. I particularly like that it spends some time relating the work to object-oriented techniques, which should make it a bit more approachable to the typical programmer.
 
 Effect systems, effect handlers, and algebraic effects.
 
+ZIO and Kyo as existing effect systems that also have some notion of capability-passing. Written in monadic style, not direct style. No integration with capture checking.
+
+Coeffects
+
 Object-capabilities.
 
-In this chapter we introduced reactive programming. The core ideas are very old (Esterel etc.) but the modern lineage starts, I believe, with functional reactive programming (FRP). Fran cite here.
+In this chapter we introduced reactive programming. The core ideas are very old (Esterel etc.) but the modern lineage starts, I believe, with functional reactive programming (FRP). Fran.
 
-FrTime / Flapjax lineage. Glitch-free.
+FrTime / Flapjax lineage. Glitch-free, web.
 
 Observables / Rx lineage. Duality between observable and iterator. Tricky semantics (hot and cold observables, glitches) and large API.
 
