@@ -1,3 +1,4 @@
+#import "../stdlib.typ": href, styled-table
 == User Interfaces as Capabilities
 
 In the previous section we analyzed a typical user interface implementation and extracted three capabilities and spread across two stages.
@@ -6,7 +7,9 @@ We'll now turn to implementation, creating a framework for terminal user interfa
 
 === Infrastructure
 
-We've already investigated the terminal in @sec:tagless-final:codata. Our usage here will be much more advanced, building full user interfaces, and as result we'll require more infrastructure. This code isn't particularly relevant to capability-passing, so we'll just quickly sketch it here. See the full code in the code repository *link here* for details.
+We've already investigated the terminal in @sec:tagless-final:codata. Our usage here will be much more advanced, building full user interfaces, and as result we'll require more infrastructure. This code isn't particularly relevant to capability-passing, so we'll just quickly sketch it here. See the full code in the #href("https://github.com/functionalprogrammingstrategies/code")[code repository] for details.
+
+The `Buffer` is the core type we'll use to display the interface. This is simply a two-dimensional array of characters representing what will appear on the screen. Each component should only write to a rectangular region of the terminal, and with the `Buffer` we can easily restrict them to the region they have been allocated. It's also much less error-prone to have a single type responsible for rendering than to delegate it to individual components.
 
 The `Buffer` and related types. No styling (no bold, or underline, or blink, etc.) Only single character width, meaning no emojis or CJK characters.
 
@@ -15,6 +18,27 @@ The `Buffer` and related types. No styling (no bold, or underline, or blink, etc
 
 
 === Layout Capability
+
+Layout is our first, and simplest, capability. There are two sides to this: the side that creates the layout tree, which is exposed to components, and the side that does layout, which is internal to the user interface runtime. Each side also corresponds to one of the two stages we identified earlier. We're disallowing dynamic changes to the layout tree, so construction belongs purely to the setup stage. Layout itself belongs to the reactive stage. This means components can change their size in response to events, but we cannot add or remove components from the tree.
+
+We have a design principles to guide us: layout is an effect. Therefore an imperative interface will do.
+Here's my implementation.
+
+```scala
+trait LayoutContext:
+  def addComponent(build: Component): Unit
+```
+
+I called it `LayoutContext` because `Context` is a bit shorter than `Capability` and capabilities are a kind of context.
+
+This definition depends on a `Component` type that we have yet to implement. What
+
+```scala
+trait Component:
+  def size: Size
+
+  def render(size: Size, buf: Buffer): Unit
+```
 
 
 === Event Capability
