@@ -1,12 +1,15 @@
 == User Interfaces as Capabilities
 
-In the previous section we analyzed a typical user interface implementation and extracted three capabilities and two stages.
-We'll now turn to implementation. We're going to create a framework for terminal user interfaces. We've already investigated the terminal in @sec:tagless-final:codata. Our usage here will be much more advanced, building full user interfaces. As result we'll require more infrastructure. This code isn't particularly relevant to capability-passing, so we'll just quickly sketch it here. See the full code in the code repository *link here* for details.
+In the previous section we analyzed a typical user interface implementation and extracted three capabilities and spread across two stages.
+We'll now turn to implementation, creating a framework for terminal user interfaces.
 
 
 === Infrastructure
 
+We've already investigated the terminal in @sec:tagless-final:codata. Our usage here will be much more advanced, building full user interfaces, and as result we'll require more infrastructure. This code isn't particularly relevant to capability-passing, so we'll just quickly sketch it here. See the full code in the code repository *link here* for details.
+
 The `Buffer` and related types. No styling (no bold, or underline, or blink, etc.) Only single character width, meaning no emojis or CJK characters.
+
 
 `Component`.
 
