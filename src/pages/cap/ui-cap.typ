@@ -25,13 +25,16 @@ We have a design principles to guide us: layout is an effect. Therefore an imper
 Here's my implementation.
 
 ```scala
-trait LayoutContext:
+trait Layout:
   def addComponent(build: Component): Unit
 ```
 
-I called it `LayoutContext` because `Context` is a bit shorter than `Capability` and capabilities are a kind of context.
-
-This definition depends on a `Component` type that we have yet to implement. What
+This definition depends on a `Component` type that we have yet to implement.
+Let's implement `Component` now.
+It's reasonable to expect users to create their own compoments, so this should be codata rather than data.
+Therefore we should think about the operations we want to perform on `Component`.
+Two come to mind: measuring the size of the component, so that we can perform layout, and rendering it to the buffer once it is laid out.
+This suggests the following interface.
 
 ```scala
 trait Component:
@@ -39,6 +42,8 @@ trait Component:
 
   def render(size: Size, buf: Buffer): Unit
 ```
+
+
 
 
 === Event Capability
