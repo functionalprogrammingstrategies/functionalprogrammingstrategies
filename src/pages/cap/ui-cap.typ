@@ -2,18 +2,57 @@
 == User Interfaces as Capabilities
 
 In the previous section we analyzed a typical user interface implementation and extracted three capabilities spread across two stages.
-We'll now turn to implementation, creating a framework for terminal user interfaces.
+We'll now turn to implementation, creating a framework for terminal user interfaces in a capability-passing style.
+
+It will help to ground the discussion with an example.
+In the previous section we considered an example with a text input and a button.
+Here's that same example, this time written in the capability-passing framework we'll develop.
+
+```scala
+val app = FullScreen {
+  val action = Var(text.Line(""))
+  val enabled = action.map(_.isNonEmpty)
+
+  Row(Size.wrapContent) {
+    TextInput(
+      Size(Measurement.Fixed(25), Measurement.WrapContent),
+      action
+    )
+
+    Button(Size.wrapContent) { ctx ?=>
+      ctx.enabledWhen(enabled)
+      ctx.onSubmit {
+        doSomething(action.peek)
+        action.set(text.Line.empty)
+      }
+      Var(text.Line("< Go >"))
+    }
+  }
+}
+
+app.run(Terminal)
+```
+
+It looks similar to the code for the reactive variables example, but notice that layout and event handling are effects. For example, we ignore the result of the call to the `onSubmit` method on `ctx` (`ctx` represents a capability); it's the effect that is important, not the value the method returns.
 
 
 === Infrastructure
 
 We've already investigated the terminal in @sec:tagless-final:codata. Our usage here will be much more advanced, building full user interfaces, and as result we'll require more infrastructure. This code isn't particularly relevant to capability-passing, so we'll just quickly sketch it here. See the full code in the #href("https://github.com/functionalprogrammingstrategies/code")[code repository] for details.
 
-The `Buffer` is the core type we'll use to display the interface. This is simply a two-dimensional array of characters representing what will appear on the screen. Each component should only write to a rectangular region of the terminal, and with the `Buffer` we can easily restrict them to the region they have been allocated. It's also much less error-prone to have a single type responsible for rendering than to delegate it to individual components.
+There are three broad categories of types in the infrastructure code:
 
-The `Buffer` and related types. No styling (no bold, or underline, or blink, etc.) Only single character width, meaning no emojis or CJK characters.
+1. representations of text that we can display;
+2. representation of the screen we will display; and
+3. measurements of various kinds.
 
-`Text` and `Line`.
+Let's discuss each in turn.
+
+In a terminal user interface we have to be careful when we display a `String`. If it contains certain characters, for example the newline `\n`, it could mess up rendering. For this reason we use the `Line` type within the `text` package. It represents text that will displayed on a single line in the terminal, and strips out characters that could mess up the display.
+
+The `Buffer` is the core type we'll use to display the interface. This is simply a two-dimensional array of cells representing what will appear on the screen, along with styling information for each cell. We use the term "cell" because some characters, such as emojis, take up twice the width of a normal character. Each component should only write to a rectangular region of the terminal, and with the `Buffer` we can easily restrict them to the region they have been allocated. It's also much less error-prone to have a single type responsible for rendering than to delegate it to individual components. `Buffer` depends on a number of other types, such as those that represent styling, but this detail is not important to us here.
+
+Finally, we have the types representing measurements. There are a surprisingly number of them, as we need to not only represent rectangular regions (`Rect`) and length and width (`Dimensions`) in terms of cells, but also constraints on components that we need for layout. The later we'll discuss in more detail when we discuss the layout algorithm.
 
 
 === Layout Capability
@@ -30,20 +69,22 @@ trait Layout:
 ```
 
 This is an imperative interface, a decision that we can see as driven by both implementation and conceptual concerns.
-In the implementation we will pass around a `given` value implementing `Layout`.
-A pure interface would return a new `Layout` value.
+Consider a pure interface, which would return a new `Layout` value upon calling `addComponent`:
 
 ```scala
 trait Layout:
   def addComponent(component: Component): Layout
 ```
 
-This won't work as a `given` value; we would have to make the returned `Layout` itself a `given` value replacing the one already in scope.
-This is not possible in Scala.
+We'll implement capabilities, like `Layout`, using `given` values.
+The pure interface won't work as a `given` value.
+We would have to make the returned `Layout` itself a `given` value replacing the one already in scope,
+which is not possible in Scala.
 
-Conceptually, we've chosen to make `Layout` a capability, which means that calls to `Layout` are allowed to have effects.
+That's the implementation angle; now let's look at the conceptual argument.
+It's quite simple: we've chosen to make `Layout` a capability, and capabilities are allowed to have effects.
 In this case the effect is mutating the current layout tree.
-We'll return to this point later *add xref* to discuss how it fits into the functional programming model.
+We'll return to this point later *add xref* to discuss how this fits into the functional programming paradigm of composition and reasoning.
 
 Later on we'll create a concrete implementation of `Layout`.
 Now, though, we'll move on to the other side of `Layout`, the actual layout algorithm.
@@ -51,33 +92,32 @@ This algorithm will dictate what `Component` needs to provide,
 which in turn will allow us to define the `Component` type and complete this section.
 
 There are many ways we can express layout.
-Constraint based layout gives a very expressive system.
 For example, we could say that the width of component A is twice that of component B,
 and it's located immediately below component C.
+This is a very expressive type of layout system, and implies a constraint based layout algorithm.
 The downside of constraints is that they are complex to implement and can be slow to run.
 At the other extreme we have completely fixed layout, where size and location must be expressed upfront in absolute terms.
 We'll choose a middle ground, that allows for some expressivity and is reasonably performant and simple to implement.
-Specifically, we'll allow components to express their desired size in one of three ways:
+Specifically, we'll allow components to express their desired size in one of two ways:
 
-1. a fixed size;
-2. as a proportion of parent's available space; or
+1. a fixed size; or
 3. in terms of the space required by their children.
 
 We'll further restrict components to take up rectangular regions, which is not especially onerous for a terminal user interface.
-These constraints allow us to implement layout in a single pass, while still allowing expressive layout.
+These constraints allow us to implement layout in a single pass, while still allowing reasonably expressive layout.
 
-From this description we can derive the following requirements of components.
-Firstly, parents must be able to inspect the desired size of their children so they can determine if they need to calculate how much space to allocate to the child or defer that calculation to the child.
-Secondly, a component must be able to measure how much space it consumes given the space that is actually available to it.
-Finally, we must be able to render a component to the `Buffer`.
+From this description we can derive the following requirements of components:
+Firstly, parents must be able to inspect the desired size of their children, so when the parent's size is determined by the children it can calculate that size.
+Secondly, a component must be able to determine how much space it consumes given the space that is actually available to it.
+We will also need to be able to render a component to the `Buffer` once the layout is complete.
 
-With these three requirements in hand, we can now ask ourselves if `Component` should be data or codata?
+With these three requirements in hand, we can now consider if `Component` should be data or codata.
 It doesn't seem feasible to define all possible components up-front, so a codata representation makes sense.
 This suggests the following interface
 
 ```scala
 trait Component:
-  /** The space the components wishes the occupy. */
+  /** The space the components wishes to occupy. */
   def size: Size
 
   /** The space the component actually occupies given available space. */
@@ -85,51 +125,6 @@ trait Component:
 
   /** Draw the component to the buffer with the given dimensions. */
   def render(dimensions: Dimensions, buf: Buffer): Unit
-```
-
-where we define the ancillary types as
-
-```scala mdoc:silent
-/** Concrete cell dimensions: the actual width and height of a component after
-  * layout has been resolved.
-  */
-final case class Dimensions(width: Int, height: Int):
-
-/** The layout size of a component: a measurement for each axis. */
-final case class Size(width: Measurement, height: Measurement)
-
-/** A Measurement expresses a dimension of size in terms of a fixed number of
-  * cells, a portion of the parent's space, or in terms of the space occupied by
-  * children.
-  */
-enum Measurement:
-  /** Exactly `cells` */
-  case Fixed(cells: Int)
-
-  /** Exactly match the aggregate size of children elements. */
-  case WrapContent
-
-  /** A fraction of the parent container's remaining size after placing fixed size
-    * and wrap to content children.*/
-    */
-  case Percentage(percent: Double)
-
-/** Represents an unbounded amount of space in a Constraint. */
-sealed trait Infinity
-object Infinity extends Infinity
-
-/** A range of acceptable sizes a parent offers a child during measurement.
-  *
-  * `min == max` on an axis is a *tight* constraint ("you must be exactly
-  * this"); `min == 0` is *loose* ("take what you need, up to max"). A `max` of
-  * [[Infinity]] means unbounded — the child may be as large as it likes.
-  */
-final case class Constraint(
-    minWidth: Int,
-    maxWidth: Int | Infinity,
-    minHeight: Int,
-    maxHeight: Int | Infinity
-):
 ```
 
 The final step is to implement `Layout` and some components.
@@ -154,6 +149,17 @@ Now we need some components.
 We'll show implementations for two:
 a very simple component that displays a single line of text,
 and a component that lays its children out in a row.
+
+We need to add a final component, which will be the root of the component tree.
+
+We now have enough to display some user interfaces!
+
+*Example here*
+
+However, our interfaces are entirely static.
+We need the ability to respond to events to add interactivity.
+This is what we turn to next.
+
 
 === Event Capability
 
