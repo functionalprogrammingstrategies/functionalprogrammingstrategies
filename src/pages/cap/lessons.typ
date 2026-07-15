@@ -17,11 +17,13 @@ We lose the property of accumulating dependencies,
 but unlike tagless final we don't need to use control flow combinators, like `map` and `flatMap`, to connect program fragments.
 The code is simpler and uses the default language control flow.
 
+Reasoning and composition.
+
 Another big idea is shifting from values to effects.
 With the interpreter strategy we build a program, and then run.
 Previously these programs have been values.
 Here the programs, the components and events in our user interface, are effects mediated by the capabilities.
-Some capabilities provide want we usually consider effects: errors, asynchronicity, and so on.
+Some capabilities provide what we usually consider effects: errors, asynchronicity, and so on.
 What we've seen here is representing as effect what we usually think of as value: the layout tree and event graph.
 Internally we're still building these data structure, but because they are internal to the capability context the user doesn't have to manage them.
 This makes the programmer job a bit simpler.
@@ -37,3 +39,6 @@ For example, in leaf components we don't provide the layout capability so no mor
 This could be more flexible.
 For example, with a richer component hierarchy we might define buttons and drop down lists. Within the button component we'd allow text subcomponents, but not drop downs.
 This is straightforward with capabilities, but not so easy with algebraic data types.
+
+Designing capabilites.
+There is an external API and an internal API.

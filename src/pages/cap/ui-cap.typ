@@ -152,6 +152,8 @@ and a component that lays its children out in a row.
 
 We need to add a final component, which will be the root of the component tree.
 
+*Code here*
+
 We now have enough to display some user interfaces!
 
 *Example here*
@@ -162,6 +164,90 @@ This is what we turn to next.
 
 
 === Event Capability
+
+Our next capability will allow us to respond to user input.
+Although some terminals do support mouse events, for simplicity we'll only consider keyboard events.
+Components will need the ability to respond to specific key presses, and in some cases all key presses.
+The interface provided by the `Event` capability below will suffice.
+
+```scala
+trait Event:
+  /** Register a handler that fires only for the given key. */
+  def onKey(key: Key)(handler: => Unit): Unit
+
+  /** Register a handler that fires for every key press. */
+  def onAnyKey(handler: Key => Unit): Unit
+```
+
+This seems simple enough, but when we come to implement it we'll immediately run into some problems. Lets walk through them. We'll start by trying to implement a `DefaultEvent`, mirroring the `DefaultLayout` we created above.
+
+```scala
+import scala.collection.mutable
+
+trait DefaultEvent extends Event:
+  val keyHandlers: mutable.Map[Key, () => Unit]
+
+  def onKey(key: Key)(handler: => Unit): Unit =
+    keyHandlers += (key -> () => handler)
+```
+
+We immediately run into a problem.
+Although we can implement `onKey`
+(and `onAnyKey`, though I haven't shown this)
+how are we going to use this?
+Adding local state, the same trick that worked with `Layout`,
+doesn't work here because we're lacking something to choose between handlers when a key pressed, and then call the chosen handler.
+What we need is some kind of application-level state and control.
+
+We've just run into three important concepts, in order of increasing abstraction:
+
+1. the concept of focus, which determines the currently active component;
+2. the idea of an application runtime; and
+3. the concept of external interfaces—that is, those that address application concerns—versus internal interfaces, addressing framework concerns.
+
+Focus is a well established concepts in user interface frameworks.
+However this does not mean it is straightforward.
+Our system will work as follows:
+the unit of focus is the component, meaning that focus can apply only to components and not parts within components (unless those parts are themselves components).
+A component will only become focusable when it has registered an event handler.
+In this way focus is an implicit property of a component.
+Finally, the order in which focus will traverse components will be determined by the order in which components register as focusable.
+
+There are many reasonable semantics we could choose for focus.
+If we look at other frameworks we can find other choices.
+For example, HTML allows the application developer to determine the focus traversal order by setting the `tabindex` property.
+In Jetpack Compose the `focusable` modifier must be explicitly used to make a component focusable.
+What is important is not the specific semantics, within reason,
+but that we consciously choose those semantics.
+In our case, the semantics are designed to be convenient for the application developer (so focus is implicit) while keeping the implementation simple (so focus traversal order is fixed).
+
+Let's move on to the runtime.
+We motivated the runtime by saying we needed some kind of application-level state.
+By digging deeper into focus, we've found that we also need to maintain the current focus and the focus traversal order.
+The concept of a runtime, also known as an environment or execution context, is very common in a large system.
+In our case the runtime is providing services to the rest of the framework.
+We don't want the application to have access to the map of handlers, for example, because if it did the application could send events to the wrong handler.
+
+We can think of the runtime as a capability that is provided to the rest of framework.
+As a framework, not application, concern we shouldn't expose it the way we're exposing the application capabilities such as `Layout` and `Event`.
+How, then, should we implement the runtime?
+We could add methods to our capabilities, and use access modifiers to prevent the application from calling them.
+For example, each `Event` could hold a reference to a `Runtime` as shown below.
+
+```scala
+trait Event(runtime: Runtime):
+
+  def onKey(key: Key)(handler: => Unit): Unit =
+    // Implement in terms of the runtime
+    runtime.registerHandler(key, handler)
+```
+
+I don't like this approach, as it mixes application and framework concerns.
+I prefer to keep the capabilties as pure interfaces providing only application capabilities.
+
+Component is the right place: it's where we go from application to framework.
+Notice that `Component` already provides methods that are a framework concern.
+Layout is where components enter the framework, so adding a component now provides a runtime to the component.
 
 
 === Reactive Capability
