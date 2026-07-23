@@ -2,7 +2,7 @@
 == Stream Semantics
 
 In the last section we saw the importance of clear thinking about semantics,
-as our muddy thinking led us to mistakes in the design of the interpreter and the API we exposed to the user.
+as our muddy thinking led to mistakes in the design of the interpreter and the API.
 
 To be able to talk precisely about semantics,
 we need to introduce some terminology.
@@ -32,7 +32,8 @@ the resulting `Stream` will only produce elements for which the given predicate 
 
 Have a go at implementing this yourself before reading on.
 At this point the implementation technique should be fairly straightforward.
-The `Stream` code is getting fairly lengthy, and its only the interpreter loop that is important,
+The `Stream` code is getting fairly lengthy,
+and only the interpreter loop is important,
 so I'll only include the interpreter code here.
 
 You probably wrote something like
@@ -313,7 +314,7 @@ object Stream:
     Stream.FromSeq(seq)
 ```
 
-    Now our example program works as expected
+Now our example program works as expected
     
 ```scala mdoc
 Stream.fromIterator(Iterator.continually(1))
