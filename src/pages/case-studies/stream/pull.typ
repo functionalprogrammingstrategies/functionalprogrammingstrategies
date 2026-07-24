@@ -18,7 +18,7 @@ Hence demand flows upstream while data flows downstream.
 This is known as a *pull-based* approach, as the demand "pulls" data from the upstream nodes.
 The pull-based approach is the natural approach when using the programming strategies,
 but it's not the only approach.
-In a later section we'll discuss alternatives
+In @sec:case-study:reactive:other we'll discuss alternatives
 but right now I want to implement a feature that will help ground the discussion above.
 
 Let's implement the method `filter`, with the signature shown below.
