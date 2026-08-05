@@ -1,9 +1,10 @@
 == Further Enhancements
 
 There are many more additions we could add to `Stream`.
+In this section we'll sketch out some directions you could take `Stream`
+to develop it further.
 We're not going to walk through the implementation of any more features,
-as we've already illustrated all the ideas we wanted to address in this case study.
-However, in this section we'll sketch out some directions you could take `Stream` if you wanted to develop it further.
+however, as we've already illustrated all the ideas we wanted to address in this case study.
 
 
 === `flatMap`
@@ -11,7 +12,8 @@ However, in this section we'll sketch out some directions you could take `Stream
 In our original design we decided that `flatMap` could be useful,
 but sounded a bit complicated for our initial implementation.
 
-Adding `flatMap` is an obvious next step. This makes `Stream` a monad.
+Adding `flatMap` is an obvious next step.
+This makes `Stream` a monad.
 Type class coherence demands that `product` should now be implemented in terms of `flatMap`,
 which gives it quite different semantics.
 The `product` we originally implemented is still useful, and we should rename the method; `zip` would be the idiomatic name.
@@ -49,12 +51,7 @@ Concurrent merging could take the form of a `merge` variant that doesn't strictl
 Another approach to concurrent merging is to race two streams, returning the value from the `Stream` that emits a value first, and discarding the value, if any, emitted by the other `Stream`.
 
 
-== Resource Management
-
-A `Stream` will often use resources, like network sockets, that should be cleaned up when it ends.
-
-
-== Fan-In and Fan-Out
+=== Fan-In and Fan-Out
 
 *Fan-in* is when multiple upstreams join into a single downstream. We already support fan-in with `merge`. What we don't support is *fan-out*, sending one upstream to multiple downstreams. Think about the following code:
 
@@ -64,7 +61,34 @@ val upstream = Stream.fromIterator(Iterator(1, 2, 3))
 upstream.merge(upstream.map(s => s * 2)).toSeq
 ```
 
-This is an (incorrect) attempt to express fan-out with the available combinators. (Think about why this doesn't express fan-in; it's fairly subtle if you're not used to thinking about the description / action distinction.)
+This is an (incorrect) attempt to express fan-out with the available combinators.
+Think about why this doesn't express fan-in; it's fairly subtle issue if you're not used to thinking about the description / action distinction #footnote[
+    We can reason about this using substitution.
+
+    Starting with
+
+    ```scala
+    upstream.merge(upstream)
+    ```
+
+    we can substitute `upstream` to get
+
+    ```scala
+    Stream.fromIterator(...).merge(Stream.fromIterator(...))
+    ```
+
+    whichs shows us that `upstream` is duplicated.
+    A correct fan-out would have `upstream` occur only once.
+
+    This occurs because `upstream` is a description,
+    so we're just repeating the description of what we want to happen
+    when we use `upstream` twice.
+
+    This is completely the correct semantics,
+    but it may be a bit surprising if you think of `Stream` as an action, not a description.
+].
+
+We need a specific combinator to express fan-out.
 
 
 == Optimization
