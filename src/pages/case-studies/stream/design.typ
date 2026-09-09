@@ -1,6 +1,6 @@
 == Designing with Strategies
 
-In this section we'll take a first principles approaches to design, systematically applying strategies to create the initial interface we'll implement.
+We'll take a first principles approaches to design, systematically applying strategies to create the initial interface we'll implement.
 Before doing so, however, I want to mention another strategy that is extremely powerful but often neglected: utiliziing *prior work*.
 
 It's very rare to undertake a truly novel problem.
@@ -70,7 +70,7 @@ If we think of a `Stream` as a program working on data ordered by time, then we 
     It's not a true duality, as I understand it, but a relationship that feels very close to one.
 ]
 A sequential data structure, like `List`, is the answer.
-We know that there are two universal eliminators for structures like `List`: the left and right folds. So these are candidates for our interpreter. The right fold starts from the end of the data, which when our data is arriving over time means we need to either store it all in memory or find a time machine (not to mention that data could be infinite, and hence never end). These all suggest that `foldRight` is not appropriate. However, `foldLeft` has none of these issues. You might feel some unease with `foldLeft`. For example, it won't return a value until the stream ends, which feels like it could be a problem in some situations. Again, we just need enough to get started, so we'll add to the interface and see how it works out in practice.
+We know that there are two universal eliminators for structures like `List`: the left and right folds. So these are candidates for our interpreter. The right fold starts from the end of the data, which when our data is arriving over time means we need to either store it all in memory or find a time machine (not to mention that data could be infinite, and hence never end). These all suggest that `foldRight` is not appropriate. However, `foldLeft` has none of these issues. You might feel some unease with `foldLeft`. For example, it won't return a value until the stream ends, which feels like it could be a problem in some situations. Again, we just need enough to get started, so we'll add `foldLeft` to the interface and see how it works out in practice.
 
 ```scala mdoc:silent:reset
 trait Stream[A]:
@@ -101,7 +101,6 @@ object Stream:
 ```
 
 In a case study we can take a straight path from problem to solution.
-In this section we've done just that.
 In a real system the path will involve many more dead ends.
 I find the design strategies a useful scaffold for thinking,
 even if I cannot as immediately see how to apply them as shown here.
