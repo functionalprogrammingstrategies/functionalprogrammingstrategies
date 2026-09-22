@@ -3,10 +3,8 @@
 
 In the previous section we analyzed a typical user interface implementation and extracted three capabilities spread across two stages.
 We'll now turn to implementation, creating a framework for terminal user interfaces in a capability-passing style.
-
 It will help to ground the discussion with an example.
-In the previous section we considered an example with a text input and a button.
-Here's that same example, this time written in the capability-passing framework we'll develop.
+Here's the same example we saw earlier, this time written in the capability-passing framework we'll develop.
 
 ```scala
 val app = FullScreen {
@@ -38,7 +36,7 @@ It looks similar to the code for the reactive variables example, but notice that
 
 === Infrastructure
 
-We've already investigated the terminal in @sec:tagless-final:codata. Our usage here will be much more advanced, building full user interfaces, and as result we'll require more infrastructure. This code isn't particularly relevant to capability-passing, so we'll just quickly sketch it here. See the full code in the #href("https://github.com/functionalprogrammingstrategies/code")[code repository] for details.
+We've already investigated the terminal in @sec:tagless-final:codata. Our usage here will be more involved, building full user interfaces, and as result we'll require more infrastructure. This code isn't particularly relevant to capability-passing, so we'll just quickly sketch it here. See the full code in the #href("https://github.com/functionalprogrammingstrategies/code")[code repository] for details.
 
 There are three broad categories of types in the infrastructure code:
 
@@ -50,7 +48,7 @@ Let's discuss each in turn.
 
 In a terminal user interface we have to be careful when we display a `String`. If it contains certain characters, for example the newline `\n`, it could mess up rendering. For this reason we use the `Line` type within the `text` package. It represents text that will displayed on a single line in the terminal, and strips out characters that could mess up the display.
 
-The `Buffer` is the core type we'll use to display the interface. This is simply a two-dimensional array of cells representing what will appear on the screen, along with styling information for each cell. We use the term "cell" because some characters, such as emojis, take up twice the width of a normal character. Each component should only write to a rectangular region of the terminal, and with the `Buffer` we can easily restrict them to the region they have been allocated. It's also much less error-prone to have a single type responsible for rendering than to delegate it to individual components. `Buffer` depends on a number of other types, such as those that represent styling, but this detail is not important to us here.
+The `Buffer` represents the entirety of what we want to display in the terminal. It is simply a two-dimensional array of cells, where we can think of a cell as a character along with styling information for that character. This model doesn't always work because some characters, such as emojis, take up twice the width of a normal character, but it's good enough for most cases. Each component should only write to a rectangular region of the terminal, and with the `Buffer` we can easily restrict them to the region they have been allocated. This makes rendering much less error-prone; a mistake in one component cannot mess up others. `Buffer` depends on a number of other types, such as those that represent styling, but this detail is not important to us here.
 
 Finally, we have the types representing measurements. There are a surprisingly number of them, as we need to not only represent rectangular regions (`Rect`) and length and width (`Dimensions`) in terms of cells, but also constraints on components that we need for layout. The later we'll discuss in more detail when we discuss the layout algorithm.
 
@@ -84,7 +82,7 @@ which is not possible in Scala.
 That's the implementation angle; now let's look at the conceptual argument.
 It's quite simple: we've chosen to make `Layout` a capability, and capabilities are allowed to have effects.
 In this case the effect is mutating the current layout tree.
-We'll return to this point later *add xref* to discuss how this fits into the functional programming paradigm of composition and reasoning.
+We'll return to this point later *add xref* to discuss how this fits into the functional programming paradigm emphasising composition and reasoning.
 
 Later on we'll create a concrete implementation of `Layout`.
 Now, though, we'll move on to the other side of `Layout`, the actual layout algorithm.

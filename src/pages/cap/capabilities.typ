@@ -23,20 +23,18 @@ so we can tell at a glance if calling that function is something to pay extra at
 
 A capability is something that provides the ability to carry out an effect.
 For example, in Scala we can think of an `ExecutionContext` as providing the capability to execute asynchronously.
-We can define context as the set of available capabilities along with the state of any resources that the capabilities control.
+We can define the context as the set of available capabilities along with the state of any resources that the capabilities control.
 
 What we choose to define as a capability is a design decision.
 It comes down to what we want to explicitly track and control access to.
-For example, in many cases we do not consider memory allocation to a be a capability,
-and code can freely allocate memory.
-However, in systems programming we usually want to track and restrict memory allocation,
-and therefore it would be considered a capability in this situation.
+For example, in general programming we freely allocate memory and would not consider memory allocation to be a capability,
+However, in systems programming this is often not the case and therefore memory allocation would be considered a capability.
 
 Capability-passing is simply the idea that programs explicitly declare the capabilities they require,
 and we pass in those capabilities when we run them.
-There is a bit more complexity to make everything work nicely, but really the core idea is that simple.
+There is a bit more complexity to make everything work nicely, but the core idea really is that simple.
 This is exactly what tagless final does, which we met in @sec:tagless-final.
-When we wrote a program in tagless final style, and created a program with a type like
+In tagless final style we wrote programs with types like
 
 ```scala
 Program[Controls & Layout, Tuple2[String, Int]]

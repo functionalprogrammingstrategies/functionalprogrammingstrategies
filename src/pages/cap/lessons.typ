@@ -1,14 +1,19 @@
 == Lessons from Capability-Passing
 
-We've implemented a capability-passing user interface framework.
-I certainly found it interesting, but we're unlikely to implement many such frameworks in our career, so the question becomes:
-what are the reusable lessons?
+In the previous section we implemented a capability-passing user interface framework.
+While interesting, we're unlikely to implement many such frameworks in our career.
+More useful is to look for reusable lessons we can abstract from this example.
+In this section we'll discuss some of those lessons, starting with the program structure capability-passing brings and concluding with the implementation strategies used.
 
-Capability-passing is essentially a codata interpreter.
-We still have a separation between description and action.
-Programs, the description, are functions accepting capabilities.
-Capabilities are interpreters.
-We parameterize by capabilities, so we can swap in different implementations if we desire.
+Capability-passing is essentially a codata interpreter:
+programs are functions accepting capabilities and capabilities are interpreters.
+We parameterize programs by capabilities, so we can swap in different implementations if we desire.
+We have seen other approaches to codata interpreters, namely dependency injection and tagless final, so it is natural to compare capability-passing to them.
+We'll consider three differences: mindset, programming style, and compiler support.
+
+What tagless final and capability-passing have in common, and where they differ from dependency passing, is in the mindset they bring.
+
+
 We don't usually parameterize by output type, which marks one difference with tagless final, though we could if we wanted.
 In the improved encoding of tagless final, we saw how we could get type inference to infer all the dependencies.
 This isn't possible with capability-passing, because we do not connect every program fragment with a combinator.

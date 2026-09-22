@@ -30,7 +30,10 @@ RowContainer(i, b).show()
 ```
 
 This code is written in a callback-driven style.
-There are already user interface frameworks that we can view as implementing a capability-passing approach (though I don't think this was a conscious design choice in any of them) but I've chosen the callback-driven style, used by the browser DOM and stretching back to Smalltalk and the first GUIs, as I suspect it will be more familiar.
+I've chosen this approach as I suspect it will be familiar to many of you.
+It is the same approach used by the browser DOM, and its history stretches back to Smalltalk and the first GUIs,
+There are other ways of coding user interfaces, and we'll talk about some more of them in due course.
+
 The callback-driven approach focuses on the *components* representing what is displayed on the screen. `Input` and `Button` represent the text input and the button, respectively, and the `RowContainer` specifies the text input and button should be displayed in a row. We can see that components form a tree. We'll call this the *layout tree*.
 
 *diagram here*

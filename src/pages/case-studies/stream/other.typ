@@ -38,18 +38,18 @@ enum Emit[+A]:
   // The pull produced a value
   case Value(get: A)
   // There is no value available now, but there may be in the future
-  case Wait
+  case Await
   // The stream has ended and no values will ever be available
-  case End
+  case Stop
 ```
 
 Dualizing `Emit` is straightforward, giving us the following interface:
 
 ```scala mdoc:reset:silent
-trait Emit[A]:
+trait Emit[-A]:
   def value(get: A): Unit
-  def wait: Unit
-  def end: Unit
+  def await: Unit
+  def stop: Unit
 ```
 
 The codata version of `Emit` replaces constructors with methods that indicate the availability of data.
