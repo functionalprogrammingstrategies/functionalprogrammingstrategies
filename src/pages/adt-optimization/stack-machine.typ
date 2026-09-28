@@ -172,17 +172,17 @@ def eval: Double = {
           case Op.Sub =>
             val (a, s1) = pop(stack)
             val (b, s2) = pop(s1)
-            val s = push(a + b, s2)
+            val s = push(a - b, s2)
             loop(s, next)
           case Op.Mul =>
             val (a, s1) = pop(stack)
             val (b, s2) = pop(s1)
-            val s = push(a + b, s2)
+            val s = push(a * b, s2)
             loop(s, next)
           case Op.Div =>
             val (a, s1) = pop(stack)
             val (b, s2) = pop(s1)
-            val s = push(a + b, s2)
+            val s = push(a / b, s2)
             loop(s, next)
         }
 
