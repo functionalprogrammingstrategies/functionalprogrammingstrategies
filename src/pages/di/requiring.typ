@@ -148,7 +148,7 @@ val getUser: (UserId, DatabaseConnection) => User =
   (id, database) => ???
 
 val saveUser: (User, DatabaseConnection) => Unit =
-  (id, database) => ???
+  (user, database) => ???
 ```
 
 Now we have two options for dealing with the dependency: we can move it before or after the functions.
