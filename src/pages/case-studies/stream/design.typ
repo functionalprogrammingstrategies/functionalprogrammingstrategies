@@ -1,4 +1,5 @@
 == Designing with Strategies
+<sec:case-study:reactive:design>
 
 We'll take a first principles approaches to design, systematically applying strategies to create the initial interface we'll implement.
 Before doing so, however, I want to mention another strategy that is extremely powerful but often neglected: utiliziing *prior work*.
