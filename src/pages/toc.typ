@@ -135,6 +135,7 @@
 // Part 5: Case Studies
 #include  "parts/part4.typ"
 #include  "usability/index.typ"
+
 #include  "case-studies/stream/index.typ"
 #include  "case-studies/stream/design.typ"
 #include  "case-studies/stream/implementation.typ"
@@ -143,15 +144,24 @@
 #include  "case-studies/stream/further.typ"
 #include  "case-studies/stream/other.typ"
 #include  "case-studies/stream/conclusions.typ"
+
+#include  "case-studies/incremental/index.typ"
+#include  "case-studies/incremental/implementation.typ"
+#include  "case-studies/incremental/conclusions.typ"
+
 #include  "case-studies/testing/index.typ"
+
 #include  "case-studies/error-handling/index.typ"
+
 #include  "case-studies/map-reduce/index.typ"
+
 #include  "case-studies/validation/index.typ"
 #include  "case-studies/validation/sketch.typ"
 #include  "case-studies/validation/check.typ"
 #include  "case-studies/validation/map.typ"
 #include  "case-studies/validation/kleisli.typ"
 #include  "case-studies/validation/conclusions.typ"
+
 #include  "case-studies/crdt/index.typ"
 #include  "case-studies/crdt/eventual-consistency.typ"
 #include  "case-studies/crdt/g-counter.typ"
