@@ -146,7 +146,9 @@
 #include  "case-studies/stream/conclusions.typ"
 
 #include  "case-studies/incremental/index.typ"
-#include  "case-studies/incremental/implementation.typ"
+#include  "case-studies/incremental/design.typ"
+#include  "case-studies/incremental/dynamic.typ"
+#include  "case-studies/incremental/direct.typ"
 #include  "case-studies/incremental/conclusions.typ"
 
 #include  "case-studies/testing/index.typ"
