@@ -39,7 +39,7 @@ enum Stream[A]:
     this match
       case Map(source, f) => source.next().map(f)
       case Product(left, right) => (left.next(), right.next()).tupled
-      case FromIterator(it) => if it.hasNext then Some(it.next) else None
+      case FromIterator(it) => it.nextOption()
 
   def foldLeft[B](zero: B)(f: (B, A) => B): B =
     this.next() match
@@ -120,7 +120,7 @@ enum Stream[A]:
       compiled match
         case Compiled.Map(source, f) => next(source).map(f)
         case Compiled.Product(left, right) => (next(left), next(right)).tupled
-        case Compiled.FromIterator(it) => if it.hasNext then Some(it.next) else None
+        case Compiled.FromIterator(it) => it.nextOption()
         case c @ Compiled.FromSeq(seq, idx) =>
           if idx == seq.size then None
           else
@@ -232,7 +232,7 @@ enum Stream[A]:
           else
             c.count = count - 1
             next(source)
-        case Compiled.FromIterator(it) => if it.hasNext then Some(it.next) else None
+        case Compiled.FromIterator(it) => it.nextOption()
         case c @ Compiled.FromSeq(seq, idx) =>
           if idx == seq.size then None
           else
@@ -355,7 +355,7 @@ enum Stream[A]:
           else
             c.count = count - 1
             next(source)
-        case Compiled.FromIterator(it) => if it.hasNext then Some(it.next) else None
+        case Compiled.FromIterator(it) => it.nextOption()
         case c @ Compiled.FromSeq(seq, idx) =>
           if idx == seq.size then None
           else

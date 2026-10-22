@@ -133,7 +133,7 @@ enum Stream[A]:
     this match
       case Map(source, f) => source.next().map(f)
       case Product(left, right) => (left.next(), right.next()).tupled
-      case FromIterator(it) => if it.hasNext then Some(it.next) else None
+      case FromIterator(it) => it.nextOption()
 
   def foldLeft[B](zero: B)(f: (B, A) => B): B =
     this.next() match
