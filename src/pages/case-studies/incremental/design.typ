@@ -1,6 +1,6 @@
 == Designing Incremental Computing
 
-We're going to design our incremental computing by applying strategies, just as we did in @sec:case-study:reactive:design. I want to once again note that reading the literature is an very appropriate strategy to use here---see the literature review in @sec:case-study:incremental:conclusions---but we're going to take the harder route and build it from scratch.
+We're going to design our incremental computing library by applying strategies, just as we did in @sec:case-study:reactive:design. I want to once again note that reading the literature is a very appropriate strategy to use here---see the literature review in @sec:case-study:incremental:conclusions---but we're going to take the harder route and build it from scratch.
 
 We'll start with the API.
 Incremental programming is very similar to reactive programming, so we can use a similar API.
@@ -20,7 +20,39 @@ trait Signal[A]:
 
 Notice the one major change from `Stream`: the interpreter is `get`, which simply returns the current value of the `Signal`, instead of `foldLeft`. This is because `Signals` don't have a notion of time, and so don't support folding over the history of values.
 
-We don't have any constructors. `State`, `set`, and `update`.
+We have an interpreter and some combinators, but no constructors.
+The simplest constructor creates a `Signal` from an initial value:
+
+```scala
+object Signal:
+  def apply[A](value: A): Signal[A]
+```
+
+There's a problem here.
+We need some way to change a value in a signal, which will cause its dependents to update.
+Our API currently has no way to achieve this.
+We'll solve the problem by creating a subtype of `Signal` called `State`,
+with the following API.
+
+```scala mdoc:silent
+trait State[A] extends Signal[A]:
+  def set(newValue: A): Unit
+
+  def update(f: A => A): Unit
+```
+
+Now values of type `State` can only be roots ? sources ? of the dependency graph.
+
+This isn't functional! What about substitution. We'll come back to that.
+
+Now our constructor can return `State` instead of `Signal`.
+
+```scala
+object Signal:
+  def apply[A](value: A): State[A]
+```
+
+We are ready to move on to implementation.
 
 We could reify, but we saw an extensive case study using this approach in @sec:case-study:reactive. Instead we'll take a codata approach.
 
