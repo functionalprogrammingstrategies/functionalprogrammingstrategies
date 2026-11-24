@@ -13,9 +13,9 @@ Following Javascript naming conventions, we'll call our basic type `Signal` and 
 trait Signal[A]:
   def get: A
 
-  def map[B](f: A => B): Signal[B] =
+  def map[B](f: A => B): Signal[B]
 
-  def product[B](that: Signal[B]): Signal[(A, B)] =
+  def product[B](that: Signal[B]): Signal[(A, B)]
 ```
 
 Notice the one major change from `Stream`: the interpreter is `get`, which simply returns the current value of the `Signal`, instead of `foldLeft`. This is because `Signals` don't have a notion of time, and so don't support folding over the history of values.
@@ -56,7 +56,7 @@ We are ready to move on to implementation.
 
 We could reify, but we saw an extensive case study using this approach in @sec:case-study:reactive. Instead we'll take a codata approach.
 
-```scala mdoc:silent
+```scala mdoc:reset
 trait Signal[A]:
   self =>
 
