@@ -3,7 +3,7 @@
 
 Our very first strategy is using *types as constraints*.
 We'll start by discussing two different ways we can think of types:
-by a type is, sometimes known as an *extensional* view; and
+by what a type is, sometimes known as an *extensional* view; and
 by what a type can do, sometimes known as an *intensional* view.
 The latter view is less familiar,
 but is necessary to get the most from an expressive type system
